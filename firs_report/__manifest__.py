@@ -15,6 +15,7 @@
             "notify_cron.xml"
           ],
   "qweb"  : ['static/src/xml/firs_report.xml'],
+  "images" : ['static/description/Banner.png'],
   "author" :  "I-FIS llc",
   "website" :  "https://i-fis.com/",
   "application" : True,
