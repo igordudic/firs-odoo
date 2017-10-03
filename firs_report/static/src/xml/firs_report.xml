@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<templates id="template" xml:space="preserve">
+
+	<t t-extend="PosTicket" >
+		<t t-jquery=".pos-sale-ticket" t-operation="append">
+			<br />
+			<div class="pos-center-align"><t t-esc="receipt.receipt_seq" /></div>
+			<t t-if="receipt.sk_sid">
+				<div class="pos-center-align">SID: <t t-esc="receipt.sk_sid" /></div>
+			</t>
+			<t t-if="receipt.sk_uid">
+				<div class="pos-center-align">UID: <t t-esc="receipt.sk_uid" /></div>
+			</t>
+		</t>
+	</t>
+</templates>
