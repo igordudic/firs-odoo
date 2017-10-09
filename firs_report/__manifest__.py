@@ -16,7 +16,7 @@
           ],
   "qweb"  : ['static/src/xml/firs_report.xml'],
   "images" : ['static/description/Banner.png'],
-  "author" :  "I-FIS llc",
+  "author" :  "I-FIS LLC | i-fis.com",
   "website" :  "https://i-fis.com/",
   "application" : True,
   "installable" : True,
