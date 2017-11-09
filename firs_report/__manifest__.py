@@ -7,7 +7,7 @@
   "summary" : "This module provides FIRS Integration with Odoo POS",
   "category" : "Point Of Sale",
   "sequence"  : 1,
-  "depends" : ['point_of_sale'],
+  "depends" : ['point_of_sale','account'],
   "data"  : [
             'security/ir.model.access.csv',
             'views/models_views.xml',

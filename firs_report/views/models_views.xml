@@ -46,13 +46,19 @@
 								<field name="client_secret" required="1"/>
 							</group>
 						</group>
-						<group string="Bill/Report Attribute">
-							<field name="vat_number" required="1"/>
-							<field name="business_place" required="1"/>
-							<field name="business_device" required="1"/>
-							<field name="active_till" invisible="1"/>
-							<field name="auth_type" invisible="1"/>
-							<field name="auth_token" invisible="1"/>
+						<group>
+							<group string="POS Bill/Report Attribute">
+								<field name="vat_number" required="1"/>
+								<field name="business_place" required="1"/>
+								<field name="business_device" required="1"/>
+								<field name="active_till" invisible="1"/>
+								<field name="auth_type" invisible="1"/>
+								<field name="auth_token" invisible="1"/>
+							</group>
+							<group string="Invoice Bill/Report Attribute">
+								<field name="inv_business_place" required="1"/>
+								<field name="inv_session_id" required="1"/>
+							</group>
 						</group>
 					</sheet>
 				</form>
@@ -80,7 +86,7 @@
 			<field name="view_id" ref="firs_config_tree"/>
 		</record>
 
-		<menuitem id="firs_config_menu_id" name="FIRS Configuration"  parent="point_of_sale.menu_point_config_product" action="firs_config_action" />
+		<menuitem id="firs_config_menu_id" name="FIRS Configuration"  parent="point_of_sale.menu_point_config_product" action="firs_config_action" sequence="20"/>
 
 
 
@@ -94,9 +100,49 @@
 					<field name="sk_uid" readonly="1"/>
 					<field name="receipt_seq" readonly="1"/>
 				</field>
-				<!-- <button name="refund">
-					<button name="fetch_taxes" string="Get Report" type="object" />
-				</button> -->
+				<button name="refund" position='after'>
+					<button name="fetch_taxes" string="Upload Report" type="object" attrs="{'invisible': [('sk_uid','!=',False)]}" class="oe_highlight"/>
+				</button>
+			</field>
+		</record>
+
+
+
+
+
+		<record id="action_pos_order" model="ir.actions.act_window">
+			<field name="name">Orders</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">pos.order</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" eval="False"/>
+			<field name="domain">[('sk_uid','=',False)]</field>
+		</record>
+
+
+		<menuitem id="firs_order_menu_id" name="Failed Orders Upload"  action="action_pos_order" parent="point_of_sale.menu_point_config_product" sequence="21"/>
+
+		<!-- Invoice -->
+
+		<record model="ir.ui.view" id="invoice_form_inherited">
+			<field name="name">account.invoice.form</field>
+			<field name="model">account.invoice</field>
+			<field name="inherit_id" ref="account.invoice_form" />
+			<field name="arch" type="xml">
+				<notebook position="inside">
+					<page string="FIRS Info">
+						<group>
+							<button name="fetch_taxes" string="Upload Report" type="object" attrs="{'invisible':['|',('sk_uploaded','=',True), ('state', '!=', 'paid')]}" class="oe_highlight"/>
+						</group>
+						<group>
+							<field name="sk_sid" readonly="1"/>
+							<field name="sk_uid" readonly="1"/>
+							<field name="receipt_seq" readonly="1"/>
+							<field name="sk_uploaded" invisible="1"/>
+						</group>
+					</page>
+				</notebook>
 			</field>
 		</record>
 

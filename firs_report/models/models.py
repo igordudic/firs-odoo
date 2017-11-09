@@ -23,6 +23,21 @@ class info_message(models.TransientModel):
 class PosOrder(models.Model):
 	_inherit = "pos.order"
 
+	@api.model
+	def create_from_ui(self,orders):
+		res = super(PosOrder,self).create_from_ui(orders)
+		if res:
+			for order in self.browse(res):
+				if order.invoice_id and order.sk_uid:
+					order.invoice_id.sudo().write({
+						'sk_sid' : order.sk_sid,
+						'sk_uid' : order.sk_uid,
+						'receipt_seq' : order.receipt_seq,
+						'sk_uploaded': True
+					})
+		return res
+
+
 	@api.multi
 	def fetch_taxes(self):
 		rec_data = self.env['firs.config'].search([])[0]
@@ -154,16 +169,19 @@ class firsConfig(models.Model):
 		})
 		_logger.warning('XXXXXXXXXXXXXX: %s', data_dict)
 		# raise Warning(data_dict)
-		r = requests.post('https://firs-api.i-fis.com/v1/bills/report',  data=json.dumps(data_dict), headers=headers)
-		if r.status_code==200:
-			resp = r.json()
-			if type(resp)==dict and resp.has_key('payment_code'):
-				return resp.get('payment_code')
+		try:
+			r = requests.post('https://firs-api.i-fis.com/v1/bills/report',  data=json.dumps(data_dict), headers=headers)
+			if r.status_code==200:
+				resp = r.json()
+				if type(resp)==dict and resp.has_key('payment_code'):
+					return resp.get('payment_code')
+				else:
+					raise Warning(r.text)
 			else:
 				raise Warning(r.text)
-		else:
-			raise Warning(r.text)
-		return False
+			return False
+		except Exception,e:
+			return False
 
 	
 	@api.model
@@ -221,3 +239,96 @@ class firsConfig(models.Model):
 	active_till = fields.Datetime("Active Till")
 	auth_type = fields.Char("Auth Type")
 	auth_token = fields.Char("Auth Token")
+
+	inv_session_id = fields.Integer("Business Device", help="Serial number of POS device in a business place (given after registration)")
+	inv_business_place = fields.Char("Business Place", help=" Short code of business place (given after registration)")
+
+
+
+# Update in invoice
+
+class accountInvoice(models.Model):
+	_inherit = "account.invoice"
+
+	@api.multi
+	def write(self, values):
+		result = super(accountInvoice, self).write(values)
+		if values.has_key('state') and values.get('state',False)=="paid":
+			try:
+				self.fetch_taxes()
+			except Exception,e:
+				pass
+		return result
+
+	@api.multi
+	def fetch_taxes(self):
+		if self.sk_uploaded:
+			return True
+		rec_data = self.env['firs.config'].search([])[0]
+		if not rec_data:
+			raise UserError(_("Please configure the FIRS app before you could upload the report!"))
+		crr = str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+		if crr > rec_data.active_till:
+			rec_data.test_connection()
+
+		auth = rec_data.auth_type+" "+ rec_data.auth_token
+		headers = {
+			"Content-Type": "application/json",
+			"Authorization": auth
+		}
+
+		currency = self.currency_id
+		if self.amount_total!=0.0:
+			taxesline = []
+			data_dict = {}
+			if self.amount_tax!=0.0:
+				for tl in self.tax_line_ids:
+					taxesline.append({
+						"base_value": str(currency.round(tl.base)),
+						"rate": str(tl.tax_id.amount),
+						"value": str(currency.round(tl.amount))
+					})				
+			else:
+				taxesline = [{
+					"base_value": str(currency.round(self.amount_total-self.amount_tax)),
+					"rate": str(0.0),
+					"value": str(0.0),
+				}]
+
+			st = rec_data.client_secret+rec_data.vat_number+rec_data.inv_business_place+str(rec_data.inv_session_id)+str(self.id)+str(self.date_invoice)+str(self.amount_total)
+			security_code = md5.new(st).hexdigest()
+			
+			data_dict.update({"bill_taxes": taxesline})
+			data_dict.update({"bill" : {
+				"bill_datetime": str(self.date_invoice),
+				"bill_number": str(self.id),
+				"business_device": str(rec_data.inv_session_id),
+				"business_place": str(rec_data.inv_business_place),
+				"payment_type": "C",
+				"security_code": str(security_code),
+				"total_value": str(self.amount_total),
+				'vat_number': str(rec_data.vat_number)
+				}
+			})
+			_logger.warning('XXXXXXXXXXXXXX: %s', data_dict)
+			# raise Warning(data_dict)
+			r = requests.post('https://firs-api.i-fis.com/v1/bills/report',  data=json.dumps(data_dict), headers=headers)
+			if r.status_code==200:
+				resp = r.json()
+				if type(resp)==dict and resp.has_key('payment_code'):
+					self.write({
+						"sk_sid": security_code,
+						"sk_uid": resp.get('payment_code'),
+						"receipt_seq": self.id,
+						"sk_uploaded":True
+					})
+				else:
+					raise Warning(r.text)
+			else:
+				raise Warning(r.text)
+			return True
+
+	sk_sid = fields.Char("SID", copy=False)
+	sk_uid = fields.Char("UID", copy=False)
+	receipt_seq = fields.Char("Order Sequence", copy=False)
+	sk_uploaded = fields.Boolean("Uploaded", copy=False)
