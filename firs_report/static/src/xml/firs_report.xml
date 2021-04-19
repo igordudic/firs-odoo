@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<templates id="template" xml:space="preserve">
+	<tr t-extend="ListView.row">
+		<t t-jquery="t[t-foreach*='columns'][t-as*='column']:last td" t-operation="replace">			
+			<t t-if="column.id === 'firs_status' and column.class==='firs_status_check'">
+				<td t-if="!column.meta and column.invisible !== '1'" t-att-title="column.help"
+		            t-attf-class="#{modifiers.readonly ? 'o_readonly' : ''} #{number ? 'o_list_number' : ''} #{text ? 'o_list_text' : ''} #{column.id === 'sequence' ? 'o_handle_cell' : ''} #{column.tag === 'button' ? 'o_list_button' : ''}"
+		            t-att-data-field="column.id"
+		            t-attf-style="#{record.get(column.id) === 'Uploaded' ? 'color:green;' : 'color:red;'}"
+		            ><t t-raw="render_cell(record, column)"/></td>
+            </t>
+			<t t-else="">
+				<td t-if="!column.meta and column.invisible !== '1'" t-att-title="column.help"
+		            t-attf-class="#{modifiers.readonly ? 'o_readonly' : ''} #{number ? 'o_list_number' : ''} #{text ? 'o_list_text' : ''} #{column.id === 'sequence' ? 'o_handle_cell' : ''} #{column.tag === 'button' ? 'o_list_button' : ''}"
+		            t-att-data-field="column.id"
+		            ><t t-raw="render_cell(record, column)"/></td>
+            </t>
+	    </t>
+	</tr>
+	
+	<!-- <t t-extend="OrderReceipt" > -->
+	<t t-name="OrderReceiptext" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension" owl="1">
+		<xpath expr="//t[@t-esc='receipt.name']" position="replace">
+			<div class="pos-receipt-center-align"><t t-esc="receipt.receipt_seq" /></div>
+		</xpath>
+		<xpath expr="//div[@class='pos-receipt']" position="inside">
+			<br />
+			<t t-if="receipt.sk_sid">
+				<div class="pos-receipt-center-align">SID: <t t-esc="receipt.sk_sid" /></div>
+			</t>
+			<t t-if="receipt.sk_uid">
+				<div class="pos-receipt-center-align">UID: <t t-esc="receipt.sk_uid" /></div>
+			</t>
+			<div class="pos-receipt-center-align">Check if your receipt is valid:</div>
+			<div style="margin-top: 10px;">
+				<center>
+					<div id="qrcode">
+						<img alt="QRCode" t-att-src="getReceiptQRCodeValue" align="center"/>
+					</div>
+					
+				</center>
+			</div>
+			<!-- <t t-if="order.get('sk_uid')">
+				<div style="margin-top: 10px;">
+					<center>
+						<img id='barcode' 
+	            		t-attf-src="https://api.qrserver.com/v1/create-qr-code/?data=https://ecitizen.i-fis.com.ng/en/payment-code-verify/#{order.get('sk_uid')}" 
+	            		alt="" 
+	            		width="100" 
+	            		height="100" />
+	            	</center>
+            	</div>
+            </t>
+            <t t-else=''>
+            	<t t-set="conf_info" t-value="widget.pos.get('conf_info')"/>
+            	<div style="margin-top: 10px;">
+					<center>
+						<img id='barcode' 
+	            		t-attf-src="https://api.qrserver.com/v1/create-qr-code/?data=https://ecitizen.i-fis.com.ng/en/security-code-verify/#{conf_info.vat_number}~#{order.sequence_number}~#{conf_info.business_place}~#{order.pos_session_id}~#{order.get('bill_datetime')}~#{order.get_total_with_tax().toFixed(2).toString()}~#{order.get('sk_sid')}" 
+	            		alt="" 
+	            		width="100" 
+	            		height="100" />
+	            	</center>
+            	</div>
+            </t> -->
+        </xpath>
+	</t>
+	
+    <t t-name="TaxFreeButton" owl="1">
+        <span class="control-button order-taxfree" t-on-click="onClick">
+            <i class="fa fa-print"></i>
+            <span> </span>
+            <span>Tax Free</span>
+        </span>
+    </t>
+    <!-- <t t-name="TaxFreeButton" name="Tax Free Button" owl="1">
+    	<span class="control-button order-taxfree" style="min-width:90%;margin-left:0px;">
+                <i class="fa fa-print"></i>
+                Tax Free
+        </span>
+   	</t> -->
+   	
+</templates>
