@@ -3,8 +3,8 @@
 # Author I-FIS llc
 #################################################################################
 {
-  "name" : "FIRS i-FIS Integration",
-  "summary" : "This module provides FIRS Integration with Odoo POS",
+  "name" : "Automated Tax Remittance System (ATRS) - FIRS NIGERIA",
+  "summary" : "This module provides ATRS Integration with Odoo POS",
   "category" : "Point Of Sale",
   "sequence"  : 1,
   "version": '14.0.0.1',
@@ -18,8 +18,8 @@
             "notify_cron.xml"
           ],
   "qweb"  : ['static/src/xml/firs_report.xml'],
-  "images" : ['static/description/Banner.png'],
-  "author" :  "I-FIS LLC | i-fis.com",
+  "images" : ['static/description/icon.png'],
+  "author" :  "Intelligent Fiscal Systems",
   "website" :  "https://i-fis.com/",
   "application" : True,
   "installable" : True,
