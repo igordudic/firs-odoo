@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #################################################################################
-# Author I-FIS llc
+# Author Intelligent Fiscal Systems llc
 #################################################################################
 {
   "name" : "Automated Tax Remittance System (ATRS) - FIRS NIGERIA",
