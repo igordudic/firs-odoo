@@ -9,6 +9,7 @@ import requests
 from datetime import timedelta, datetime
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import json
+import pytz
 from hashlib import md5
 import hashlib
 import logging
@@ -42,6 +43,18 @@ class PosOrder(models.Model):
 # 					order.fetch_taxes()
 		return res
 	
+	def convert_datetime_timezone(self,order_date):
+		local = pytz.timezone("UTC")
+		local_dt = local.localize(order_date, is_dst=None)
+		
+		to_zone = pytz.timezone("Africa/Lagos")
+		wat_datetime = local_dt.astimezone(to_zone)
+		
+		wat_datetime = wat_datetime.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+		wat_datetime = datetime.strptime(wat_datetime,DEFAULT_SERVER_DATETIME_FORMAT)
+		return wat_datetime.isoformat()
+		
+		
 # 	@api.multi
 	def fetch_without_taxes(self):
 		rec_data = self.env['firs.config'].search([])[0]
@@ -57,10 +70,10 @@ class PosOrder(models.Model):
 		}
 		if self.amount_total!=0.0:
 			data_dict = {}
-			
-			date_order = self.date_order.strftime("%Y-%m-%d %H:%M:%S")
-			date_order = datetime.strptime(date_order,DEFAULT_SERVER_DATETIME_FORMAT)
-			date_order = date_order.isoformat()
+			date_order = self.convert_datetime_timezone(self.date_order)
+   # date_order = self.date_order.strftime("%Y-%m-%d %H:%M:%S")
+   # date_order = datetime.strptime(date_order,DEFAULT_SERVER_DATETIME_FORMAT)
+   # date_order = date_order.isoformat()
 			amount_total = self.amount_total - self.amount_tax
 			amount_total = "{:0.2f}".format(amount_total)
 			bill_number =  self.receipt_seq and str(self.receipt_seq) or filter(str.isdigit, str(self.name))
@@ -187,9 +200,10 @@ class PosOrder(models.Model):
 					"rate": str(0.0),
 					"value": str(0.0),
 				}]
-			date_order = self.date_order.strftime("%Y-%m-%d %H:%M:%S")
-			date_order = datetime.strptime(date_order,DEFAULT_SERVER_DATETIME_FORMAT)
-			date_order = date_order.isoformat()
+			date_order = self.convert_datetime_timezone(self.date_order)
+			#date_order = self.date_order.strftime("%Y-%m-%d %H:%M:%S")
+			#date_order = datetime.strptime(date_order,DEFAULT_SERVER_DATETIME_FORMAT)
+			#date_order = date_order.isoformat()
 # 			date_order = datetime.strptime(self.date_order,"%Y-%m-%d %H:%M:%S").isoformat()
 			amount_total = "{:0.2f}".format(self.amount_total)
 			bill_number =  self.receipt_seq and str(self.receipt_seq) or filter(str.isdigit, str(self.name))
@@ -462,7 +476,7 @@ class accountInvoice(models.Model):
 			conf_info = self.env['firs.config'].search([],limit=1)
 			if not conf_info:
 				raise UserError(_("Please configure the FIRS app before you could upload the report!"))
-		
+			
 			date_invoice = invoice.date_invoice.strftime("%Y-%m-%d")
 			date_invoice = datetime.strptime(date_invoice,DEFAULT_SERVER_DATETIME_FORMAT)
 			date_invoice = date_invoice.isoformat()
