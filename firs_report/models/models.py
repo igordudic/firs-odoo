@@ -96,7 +96,7 @@ class PosOrder(models.Model):
 				}
 			})
 			
-			r = requests.post('https://firs-api.i-fis.com/v1/bills/report',  data=json.dumps(data_dict), headers=headers)
+			r = requests.post('https://atrs-api.firs.gov.ng/v1/bills/report',  data=json.dumps(data_dict), headers=headers)
 			if r.status_code==200:
 				resp = r.json()
 				if type(resp)==dict and 'payment_code' in resp:
@@ -231,7 +231,7 @@ class PosOrder(models.Model):
 				data_dict['bill'].update({'tax_free':amount_total,})
 			_logger.warning('XXXXXXXXXXXXXX: %s', data_dict)
 			# raise Warning(data_dict)
-			r = requests.post('https://firs-api.i-fis.com/v1/bills/report',  data=json.dumps(data_dict), headers=headers)
+			r = requests.post('https://atrs-api.firs.gov.ng/v1/bills/report',  data=json.dumps(data_dict), headers=headers)
 			if r.status_code==200:
 				resp = r.json()
 				if type(resp)==dict and 'payment_code' in resp:
@@ -377,7 +377,7 @@ class firsConfig(models.Model):
 		_logger.warning('XXXXXXXXXXXXXX: %s', data_dict)
 		# raise Warning(data_dict)
 		try:
-			r = requests.post('https://firs-api.i-fis.com/v1/bills/report',  data=json.dumps(data_dict), headers=headers)
+			r = requests.post('https://atrs-api.firs.gov.ng/v1/bills/report',  data=json.dumps(data_dict), headers=headers)
 			if r.status_code==200:
 				resp = r.json()
 				if type(resp)==dict and 'payment_code' in resp:
@@ -407,7 +407,7 @@ class firsConfig(models.Model):
 			'password': self.password,
 			'grant_type':'password'
 		}
-		r = requests.post('https://firs-api.i-fis.com/oauth2/token', data=data)
+		r = requests.post('https://atrs-api.firs.gov.ng/oauth2/token', data=data)
 		
 		if r.status_code == 200:
 			data1 = r.json()
@@ -583,7 +583,7 @@ class accountInvoice(models.Model):
 				
 			_logger.warning('XXXXXXXXXXXXXX: %s', data_dict)
 			# raise Warning(data_dict)
-			r = requests.post('https://firs-api.i-fis.com/v1/bills/report',  data=json.dumps(data_dict), headers=headers)
+			r = requests.post('https://atrs-api.firs.gov.ng/v1/bills/report',  data=json.dumps(data_dict), headers=headers)
 			if r.status_code==200:
 				resp = r.json()
 				if type(resp)==dict and 'payment_code' in resp:
