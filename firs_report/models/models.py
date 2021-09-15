@@ -418,7 +418,7 @@ class firsConfig(models.Model):
 				'auth_token': data1.get('access_token')
 			})
 		else:
-			message = "Invalid Credentials!!!"
+			message = "Invalid Credentials!!!" + str(r.status_code)
 
 		partial_id = self.env['info.message'].create({'text':message})
 		return {
