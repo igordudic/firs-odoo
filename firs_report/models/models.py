@@ -161,20 +161,20 @@ class PosOrder(models.Model):
 					tax_rec = tax_obj.browse(tax_info['tax_id'])
 					if tax_rec.tax_type=='Vat':
 						bill_taxes.append({
-							"rate": str(tax_rec.amount),
+							"rate": "{:.2f}".format(tax_rec.amount),
 							"base_value": str(currency.round(tax_info['base'])),
 							"value": str(currency.round(tax_info['amount']))
 						})
 					elif tax_rec.tax_type=='Consumption':
 						bill_tax_gst.append({
-							"rate": str(tax_rec.amount),
+							"rate": "{:.2f}".format(tax_rec.amount),
 							"base_value": str(currency.round(tax_info['base'])),
 							"value": str(currency.round(tax_info['amount']))
 						})
 					else:
 						bill_tax_other.append({
 							'tax_name':tax_rec.name,
-							"rate": str(tax_rec.amount),
+							"rate": "{:.2f}".format(tax_rec.amount),
 							"base_value": str(currency.round(tax_info['base'])),
 							"value": str(currency.round(tax_info['amount']))
 						})		
@@ -318,20 +318,20 @@ class firsConfig(models.Model):
 				tax_rec = tax_obj.browse(line['tax']['id'])
 				if tax_rec.tax_type=='Vat':
 					bill_taxes.append({
-						"rate": str(line['tax']['amount']),
+						"rate": "{:.2f}".format(line['tax']['amount']),
 						"base_value": str(vals['total_without_tax']),
 						"value": str(line['amount'])
 					})
 				elif tax_rec.tax_type=='Consumption':
 					bill_tax_gst.append({
-						"rate": str(line['tax']['amount']),
+						"rate": "{:.2f}".format(line['tax']['amount']),
 						"base_value": str(vals['total_without_tax']),
 						"value": str(line['amount'])
 					})
 				else:
 					bill_tax_other.append({
 						'tax_name':tax_rec.name,
-						"rate": str(line['tax']['amount']),
+						"rate": "{:.2f}".format(line['tax']['amount']),
 						"base_value": str(vals['total_without_tax']),
 						"value": str(line['amount'])
 					})		
@@ -538,7 +538,7 @@ class accountInvoice(models.Model):
 					else:
 						bill_tax_other.append({
 							'tax_name':tl.tax_id.name,
-							"rate": str(tl.tax_id.amount),
+							"rate": "{:.2f}".format(tl.tax_id.amount),
 							"base_value": str(currency.round(tl.base)),
 							"value": str(currency.round(tl.amount))
 						})			
