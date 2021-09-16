@@ -471,7 +471,7 @@ class accountInvoice(models.Model):
 	@api.model
 	def get_firs_report_url(self,invoice):
 		if (invoice.sk_uid):
-			url = "https://ecitizen.i-fis.com.ng/en/payment-code-verify/"+invoice.sk_uid
+			url = "https://ecitizen.firs.gov.ng/en/payment-code-verify/"+invoice.sk_uid
 		elif (invoice.sk_sid):
 			conf_info = self.env['firs.config'].search([],limit=1)
 			if not conf_info:
@@ -481,10 +481,10 @@ class accountInvoice(models.Model):
 			date_invoice = datetime.strptime(date_invoice,DEFAULT_SERVER_DATETIME_FORMAT)
 			date_invoice = date_invoice.isoformat()
 			amount_total = "{:0.2f}".format(invoice.amount_total)
-			url = "https://ecitizen.i-fis.com.ng/en/security-code-verify/"
+			url = "https://ecitizen.firs.gov.ng/en/security-code-verify/"
 			url += conf_info.vat_number+"~"+str(invoice.id)+"~"+conf_info.inv_business_place+"~"+str(conf_info.inv_session_id)+"~"+date_invoice+"~"+str(amount_total)+"~"+str(invoice.sk_sid)	
 		else:
-			url = "https://ecitizen.i-fis.com.ng/en"
+			url = "https://ecitizen.firs.gov.ng"
 		return url
 	
 # 	@api.multi
