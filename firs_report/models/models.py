@@ -319,20 +319,20 @@ class firsConfig(models.Model):
 				if tax_rec.tax_type=='Vat':
 					bill_taxes.append({
 						"rate": "{:.2f}".format(line['tax']['amount']),
-						"base_value": "{:.2f}".format(vals['total_without_tax']),
+						"base_value": str(vals['total_without_tax']),
 						"value": "{:.2f}".format(line['amount'])
 					})
 				elif tax_rec.tax_type=='Consumption':
 					bill_tax_gst.append({
 						"rate": "{:.2f}".format(line['tax']['amount']),
-						"base_value": "{:.2f}".format(vals['total_without_tax']),
+						"base_value": str(vals['total_without_tax']),
 						"value": "{:.2f}".format(line['amount'])
 					})
 				else:
 					bill_tax_other.append({
 						'tax_name':tax_rec.name,
 						"rate": "{:.2f}".format(line['tax']['amount']),
-						"base_value": "{:.2f}".format(vals['total_without_tax']),
+						"base_value": str(vals['total_without_tax']),
 						"value": "{:.2f}".format(line['amount'])
 					})		
 # 				taxesline.append({
