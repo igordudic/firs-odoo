@@ -141,8 +141,8 @@ class PosOrder(models.Model):
 						val = {
 				            'account_id': tax['account_id'] or income_account,
 				            'tax_id': tax['id'],
-				            'amount': "{:.2f}".format(tax['amount']),
-				            'base': "{:.2f}".format(tax['base']),
+				            'amount': {tax['amount']:.2f},
+				            'base': {tax['base']:.2f},
 				        }
 						if tax['account_id']:
 							key = str(tax['id']) + '-' + str(tax['account_id'])
@@ -161,22 +161,22 @@ class PosOrder(models.Model):
 					tax_rec = tax_obj.browse(tax_info['tax_id'])
 					if tax_rec.tax_type=='Vat':
 						bill_taxes.append({
-							"rate": str(tax_rec.amount),
-							"base_value": "{:0.2f}".format(currency.round(tax_info['base'])),
-							"value": "{:0.2f}".format(currency.round(tax_info['amount']))
+							"rate": {tax_rec.amount:.2f},
+							"base_value": {currency.round(tax_info['base']):.2f},
+							"value": {currency.round(tax_info['amount']):.2f}
 						})
 					elif tax_rec.tax_type=='Consumption':
 						bill_tax_gst.append({
-							"rate": str(tax_rec.amount),
-							"base_value": "{:0.2f}".format(currency.round(tax_info['base'])),
-                            "value": "{:0.2f}".format(currency.round(tax_info['amount']))
+							"rate": {tax_rec.amount:.2f},
+							"base_value": {currency.round(tax_info['base']):.2f},
+							"value": {currency.round(tax_info['amount']):.2f}
 						})
 					else:
 						bill_tax_other.append({
 							'tax_name':tax_rec.name,
-							"rate": str(tax_rec.amount),
-							"base_value": "{:0.2f}".format(currency.round(tax_info['base'])),
-                            "value": "{:0.2f}".format(currency.round(tax_info['amount']))
+							"rate": {tax_rec.amount:.2f},
+							"base_value": {currency.round(tax_info['base']):.2f},
+							"value": {currency.round(tax_info['amount']):.2f}
 						})		
 # 				tax_rate = currency.round(float(self.amount_tax/(self.amount_total-self.amount_tax))*100.00)
 # 				taxesline = [{
@@ -192,13 +192,13 @@ class PosOrder(models.Model):
 # 				}]
 				bill_taxes = [{
 					"base_value": str(currency.round(self.amount_total-self.amount_tax)),
-					"rate": str(0.00),
-					"value": str(0.00),
+					"rate": str(0.0),
+					"value": str(0.0),
 				}]
 				bill_tax_gst = [{
 					"base_value": str(currency.round(self.amount_total-self.amount_tax)),
-					"rate": str(0.00),
-					"value": str(0.00),
+					"rate": str(0.0),
+					"value": str(0.0),
 				}]
 			date_order = self.convert_datetime_timezone(self.date_order)
 			#date_order = self.date_order.strftime("%Y-%m-%d %H:%M:%S")
