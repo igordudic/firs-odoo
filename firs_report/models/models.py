@@ -141,8 +141,8 @@ class PosOrder(models.Model):
 						val = {
 				            'account_id': tax['account_id'] or income_account,
 				            'tax_id': tax['id'],
-				            'amount': {tax['amount']:.2f},
-				            'base': {tax['base']:.2f},
+				            'amount': tax['amount'],
+				            'base': tax['base'],
 				        }
 						if tax['account_id']:
 							key = str(tax['id']) + '-' + str(tax['account_id'])
@@ -161,22 +161,22 @@ class PosOrder(models.Model):
 					tax_rec = tax_obj.browse(tax_info['tax_id'])
 					if tax_rec.tax_type=='Vat':
 						bill_taxes.append({
-							"rate": {tax_rec.amount:.2f},
-							"base_value": {currency.round(tax_info['base']):.2f},
-							"value": {currency.round(tax_info['amount']):.2f}
+							"rate": str(tax_rec.amount),
+							"base_value": str(currency.round(tax_info['base'])),
+							"value": str(currency.round(tax_info['amount']))
 						})
 					elif tax_rec.tax_type=='Consumption':
 						bill_tax_gst.append({
-							"rate": {tax_rec.amount:.2f},
-							"base_value": {currency.round(tax_info['base']):.2f},
-							"value": {currency.round(tax_info['amount']):.2f}
+							"rate": str(tax_rec.amount),
+							"base_value": str(currency.round(tax_info['base'])),
+							"value": str(currency.round(tax_info['amount']))
 						})
 					else:
 						bill_tax_other.append({
 							'tax_name':tax_rec.name,
-							"rate": {tax_rec.amount:.2f},
-							"base_value": {currency.round(tax_info['base']):.2f},
-							"value": {currency.round(tax_info['amount']):.2f}
+							"rate": str(tax_rec.amount),
+							"base_value": str(currency.round(tax_info['base'])),
+							"value": str(currency.round(tax_info['amount']))
 						})		
 # 				tax_rate = currency.round(float(self.amount_tax/(self.amount_total-self.amount_tax))*100.00)
 # 				taxesline = [{
@@ -525,13 +525,13 @@ class accountInvoice(models.Model):
 				for tl in self.tax_line_ids:
 					if tl.tax_id.tax_type=='Vat':
 						bill_taxes.append({
-							"rate": str(tl.tax_id.amount),
+							"rate": "{:.2f}".format(tl.tax_id.amount),
 							"base_value": str(currency.round(tl.base)),
 							"value": str(currency.round(tl.amount))
 						})
 					elif tl.tax_id.tax_type=='Consumption':
 						bill_tax_gst.append({
-							"rate": str(tl.tax_id.amount),
+							"rate": "{:.2f}".format(tl.tax_id.amount),
 							"base_value": str(currency.round(tl.base)),
 							"value": str(currency.round(tl.amount))
 						})
