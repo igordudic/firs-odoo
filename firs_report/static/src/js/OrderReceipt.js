@@ -14,11 +14,11 @@ odoo.define('firs_report.OrderReceipt', function(require) {
                 
 				let order = this.env.pos.get_order();
 				if (order.sk_uid !== undefined && order.sk_uid !==null && order.sk_uid !== false){
-		        	var url = "https://ecitizen.i-fis.com.ng/en/payment-code-verify/"+order.sk_uid;
+		        	var url = "https://ecitizen.firs.gov.ng/en/payment-code-verify/"+order.sk_uid;
 		        }
 		        else{
 		        	var conf_info = this.env.pos.get('conf_info');
-		        	var url = "https://ecitizen.i-fis.com.ng/en/security-code-verify/";
+		        	var url = "https://ecitizen.firs.gov.ng/en/security-code-verify/";
 		        	url += conf_info.vat_number+"~"+order.sequence_number+"~"+conf_info.business_place+"~"+order.pos_session_id+"~"+order.get('bill_datetime')+"~"+order.get_total_with_tax().toFixed(2).toString()+"~"+order.get('sk_sid');
 		        }
 				return '/report/barcode/?type=QR&value='+url+'&width=125&height=125';
