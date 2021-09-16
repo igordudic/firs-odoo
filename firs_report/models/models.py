@@ -162,21 +162,21 @@ class PosOrder(models.Model):
 					if tax_rec.tax_type=='Vat':
 						bill_taxes.append({
 							"rate": "{:.2f}".format(tax_rec.amount),
-							"base_value": str(currency.round(tax_info['base'])),
-							"value": str(currency.round(tax_info['amount']))
+							"base_value": "{:.2f}".format(currency.round(tax_info['base'])),
+							"value": "{:.2f}".format(currency.round(tax_info['amount']))
 						})
 					elif tax_rec.tax_type=='Consumption':
 						bill_tax_gst.append({
 							"rate": "{:.2f}".format(tax_rec.amount),
-							"base_value": str(currency.round(tax_info['base'])),
-							"value": str(currency.round(tax_info['amount']))
+							"base_value": "{:.2f}".format(currency.round(tax_info['base'])),
+							"value": "{:.2f}".format(currency.round(tax_info['amount']))
 						})
 					else:
 						bill_tax_other.append({
 							'tax_name':tax_rec.name,
 							"rate": "{:.2f}".format(tax_rec.amount),
-							"base_value": str(currency.round(tax_info['base'])),
-							"value": str(currency.round(tax_info['amount']))
+							"base_value": "{:.2f}".format(currency.round(tax_info['base'])),
+							"value": "{:.2f}".format(currency.round(tax_info['amount']))
 						})		
 # 				tax_rate = currency.round(float(self.amount_tax/(self.amount_total-self.amount_tax))*100.00)
 # 				taxesline = [{
@@ -191,14 +191,14 @@ class PosOrder(models.Model):
 # 					"value": str(0.0),
 # 				}]
 				bill_taxes = [{
-					"base_value": str(currency.round(self.amount_total-self.amount_tax)),
-					"rate": str(0.0),
-					"value": str(0.0),
+					"base_value": "{:.2f}".format(currency.round(self.amount_total-self.amount_tax)),
+					"rate": str(0.00),
+					"value": str(0.00),
 				}]
 				bill_tax_gst = [{
-					"base_value": str(currency.round(self.amount_total-self.amount_tax)),
-					"rate": str(0.0),
-					"value": str(0.0),
+					"base_value": "{:.2f}".format(currency.round(self.amount_total-self.amount_tax)),
+					"rate": str(0.00),
+					"value": str(0.00),
 				}]
 			date_order = self.convert_datetime_timezone(self.date_order)
 			#date_order = self.date_order.strftime("%Y-%m-%d %H:%M:%S")
@@ -319,21 +319,21 @@ class firsConfig(models.Model):
 				if tax_rec.tax_type=='Vat':
 					bill_taxes.append({
 						"rate": "{:.2f}".format(line['tax']['amount']),
-						"base_value": str(vals['total_without_tax']),
-						"value": str(line['amount'])
+						"base_value": "{:.2f}".format(vals['total_without_tax']),
+						"value": "{:.2f}".format(line['amount'])
 					})
 				elif tax_rec.tax_type=='Consumption':
 					bill_tax_gst.append({
 						"rate": "{:.2f}".format(line['tax']['amount']),
-						"base_value": str(vals['total_without_tax']),
-						"value": str(line['amount'])
+						"base_value": "{:.2f}".format(vals['total_without_tax']),
+						"value": "{:.2f}".format(line['amount'])
 					})
 				else:
 					bill_tax_other.append({
 						'tax_name':tax_rec.name,
 						"rate": "{:.2f}".format(line['tax']['amount']),
-						"base_value": str(vals['total_without_tax']),
-						"value": str(line['amount'])
+						"base_value": "{:.2f}".format(vals['total_without_tax']),
+						"value": "{:.2f}".format(line['amount'])
 					})		
 # 				taxesline.append({
 # 					"base_value": str(vals['total_without_tax']),
@@ -347,14 +347,14 @@ class firsConfig(models.Model):
 # 				"value": str(0.0),
 # 			}]
 			bill_taxes = [{
-				"base_value": str(vals['total_without_tax']),
-				"rate": str(0.0),
-				"value": str(0.0),
+				"base_value": "{:.2f}".format(vals['total_without_tax']),
+				"rate": str(0.00),
+				"value": str(0.00),
 			}]
 			bill_tax_gst = [{
-				"base_value": str(vals['total_without_tax']),
-				"rate": str(0.0),
-				"value": str(0.0),
+				"base_value": "{:.2f}".format(vals['total_without_tax']),
+				"rate": str(0.00),
+				"value": str(0.00),
 			}]
 			
 		data_dict.update({"bill_taxes": bill_taxes,'bill_tax_gst':bill_tax_gst})
@@ -526,32 +526,32 @@ class accountInvoice(models.Model):
 					if tl.tax_id.tax_type=='Vat':
 						bill_taxes.append({
 							"rate": "{:.2f}".format(tl.tax_id.amount),
-							"base_value": str(currency.round(tl.base)),
-							"value": str(currency.round(tl.amount))
+							"base_value": "{:.2f}".format(currency.round(tl.base)),
+							"value": "{:.2f}".format(currency.round(tl.amount))
 						})
 					elif tl.tax_id.tax_type=='Consumption':
 						bill_tax_gst.append({
 							"rate": "{:.2f}".format(tl.tax_id.amount),
-							"base_value": str(currency.round(tl.base)),
-							"value": str(currency.round(tl.amount))
+							"base_value": "{:.2f}".format(currency.round(tl.base)),
+							"value": "{:.2f}".format(currency.round(tl.amount))
 						})
 					else:
 						bill_tax_other.append({
 							'tax_name':tl.tax_id.name,
 							"rate": "{:.2f}".format(tl.tax_id.amount),
-							"base_value": str(currency.round(tl.base)),
-							"value": str(currency.round(tl.amount))
+							"base_value": "{:.2f}".format(currency.round(tl.base)),
+							"value": "{:.2f}".format(currency.round(tl.amount))
 						})			
 			else:
 				bill_taxes = [{
-					"base_value": str(currency.round(self.amount_total-self.amount_tax)),
-					"rate": str(0.0),
-					"value": str(0.0),
+					"base_value": "{:.2f}".format(currency.round(self.amount_total-self.amount_tax)),
+					"rate": str(0.00),
+					"value": str(0.00),
 				}]
 				bill_tax_gst = [{
-					"base_value": str(currency.round(self.amount_total-self.amount_tax)),
-					"rate": str(0.0),
-					"value": str(0.0),
+					"base_value": "{:.2f}".format(currency.round(self.amount_total-self.amount_tax)),
+					"rate": str(0.00),
+					"value": str(0.00),
 				}]
 				
 			amount_total = "{:0.2f}".format(self.amount_total)
