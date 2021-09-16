@@ -347,12 +347,12 @@ class firsConfig(models.Model):
 # 				"value": str(0.0),
 # 			}]
 			bill_taxes = [{
-				"base_value": "{:.2f}".format(vals['total_without_tax']),
+				"base_value": vals['total_without_tax'],
 				"rate": "{:.2f}".format(0),
 				"value": "{:.2f}".format(0),
 			}]
 			bill_tax_gst = [{
-				"base_value": "{:.2f}".format(vals['total_without_tax']),
+				"base_value": vals['total_without_tax'],
 				"rate": "{:.2f}".format(0),
 				"value": "{:.2f}".format(0),
 			}]
