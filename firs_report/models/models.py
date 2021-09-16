@@ -192,13 +192,13 @@ class PosOrder(models.Model):
 # 				}]
 				bill_taxes = [{
 					"base_value": "{:.2f}".format(currency.round(self.amount_total-self.amount_tax)),
-					"rate": str(0.00),
-					"value": str(0.00),
+					"rate": "{:.2f}".format(0),
+					"value": "{:.2f}".format(0),
 				}]
 				bill_tax_gst = [{
 					"base_value": "{:.2f}".format(currency.round(self.amount_total-self.amount_tax)),
-					"rate": str(0.00),
-					"value": str(0.00),
+					"rate": "{:.2f}".format(0),
+					"value": "{:.2f}".format(0),
 				}]
 			date_order = self.convert_datetime_timezone(self.date_order)
 			#date_order = self.date_order.strftime("%Y-%m-%d %H:%M:%S")
@@ -348,13 +348,13 @@ class firsConfig(models.Model):
 # 			}]
 			bill_taxes = [{
 				"base_value": "{:.2f}".format(vals['total_without_tax']),
-				"rate": str(0.00),
-				"value": str(0.00),
+				"rate": "{:.2f}".format(0),
+				"value": "{:.2f}".format(0),
 			}]
 			bill_tax_gst = [{
 				"base_value": "{:.2f}".format(vals['total_without_tax']),
-				"rate": str(0.00),
-				"value": str(0.00),
+				"rate": "{:.2f}".format(0),
+				"value": "{:.2f}".format(0),
 			}]
 			
 		data_dict.update({"bill_taxes": bill_taxes,'bill_tax_gst':bill_tax_gst})
@@ -545,13 +545,13 @@ class accountInvoice(models.Model):
 			else:
 				bill_taxes = [{
 					"base_value": "{:.2f}".format(currency.round(self.amount_total-self.amount_tax)),
-					"rate": str(0.00),
-					"value": str(0.00),
+					"rate": "{:.2f}".format(0),
+					"value": "{:.2f}".format(0),
 				}]
 				bill_tax_gst = [{
 					"base_value": "{:.2f}".format(currency.round(self.amount_total-self.amount_tax)),
-					"rate": str(0.00),
-					"value": str(0.00),
+					"rate": "{:.2f}".format(0),
+					"value": "{:.2f}".format(0),
 				}]
 				
 			amount_total = "{:0.2f}".format(self.amount_total)
