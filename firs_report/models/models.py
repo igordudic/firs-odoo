@@ -319,20 +319,20 @@ class firsConfig(models.Model):
 				if tax_rec.tax_type=='Vat':
 					bill_taxes.append({
 						"rate": "{:.2f}".format(line['tax']['amount']),
-						"base_value": str(vals['total_without_tax']),
+						"base_value": "{:.2f}".format(eval(vals['total_without_tax'])),
 						"value": "{:.2f}".format(line['amount'])
 					})
 				elif tax_rec.tax_type=='Consumption':
 					bill_tax_gst.append({
 						"rate": "{:.2f}".format(line['tax']['amount']),
-						"base_value": str(vals['total_without_tax']),
+						"base_value": "{:.2f}".format(eval(vals['total_without_tax'])),
 						"value": "{:.2f}".format(line['amount'])
 					})
 				else:
 					bill_tax_other.append({
 						'tax_name':tax_rec.name,
 						"rate": "{:.2f}".format(line['tax']['amount']),
-						"base_value": str(vals['total_without_tax']),
+						"base_value": "{:.2f}".format(eval(vals['total_without_tax'])),
 						"value": "{:.2f}".format(line['amount'])
 					})		
 # 				taxesline.append({
@@ -347,12 +347,12 @@ class firsConfig(models.Model):
 # 				"value": str(0.0),
 # 			}]
 			bill_taxes = [{
-				"base_value": vals['total_without_tax'],
+				"base_value": "{:.2f}".format(eval(vals['total_without_tax'])),
 				"rate": "{:.2f}".format(0),
 				"value": "{:.2f}".format(0),
 			}]
 			bill_tax_gst = [{
-				"base_value": vals['total_without_tax'],
+				"base_value": "{:.2f}".format(eval(vals['total_without_tax'])),
 				"rate": "{:.2f}".format(0),
 				"value": "{:.2f}".format(0),
 			}]
@@ -378,6 +378,7 @@ class firsConfig(models.Model):
 		# raise Warning(data_dict)
 		try:
 			r = requests.post('https://atrs-api.firs.gov.ng/v1/bills/report',  data=json.dumps(data_dict), headers=headers)
+			_logger.warning('reason: %s', r.text)
 			if r.status_code==200:
 				resp = r.json()
 				if type(resp)==dict and 'payment_code' in resp:
