@@ -96,7 +96,7 @@ class PosOrder(models.Model):
 				}
 			})
 			
-			r = requests.post('https://atrs-api.firs.gov.ng/v1/bills/report',  data=json.dumps(data_dict), headers=headers)
+			r = requests.post('https://api-dev.i-fis.com/v1/bill/report',  data=json.dumps(data_dict), headers=headers)
 			if r.status_code==200:
 				resp = r.json()
 				if type(resp)==dict and 'payment_code' in resp:
@@ -231,7 +231,7 @@ class PosOrder(models.Model):
 				data_dict['bill'].update({'tax_free':amount_total,})
 			_logger.warning('XXXXXXXXXXXXXX: %s', data_dict)
 			# raise Warning(data_dict)
-			r = requests.post('https://atrs-api.firs.gov.ng/v1/bills/report',  data=json.dumps(data_dict), headers=headers)
+			r = requests.post('https://api-dev.i-fis.com/v1/bill/report',  data=json.dumps(data_dict), headers=headers)
 			if r.status_code==200:
 				resp = r.json()
 				if type(resp)==dict and 'payment_code' in resp:
@@ -377,7 +377,7 @@ class firsConfig(models.Model):
 		_logger.warning('XXXXXXXXXXXXXX: %s', data_dict)
 		# raise Warning(data_dict)
 		try:
-			r = requests.post('https://atrs-api.firs.gov.ng/v1/bills/report',  data=json.dumps(data_dict), headers=headers)
+			r = requests.post('https://api-dev.i-fis.com/v1/bill/report',  data=json.dumps(data_dict), headers=headers)
 			_logger.warning('reason: %s', r.text)
 			if r.status_code==200:
 				resp = r.json()
@@ -408,8 +408,8 @@ class firsConfig(models.Model):
 			'password': self.password,
 			'grant_type':'password'
 		}
-		r = requests.post('https://atrs-api.firs.gov.ng/oauth2/token', data=data)
-		
+		r = requests.post('https://api-dev.i-fis.com/oauth2/token', data=data)
+
 		if r.status_code == 200:
 			data1 = r.json()
 			message = "Connection authenticated!!!"
@@ -478,8 +478,8 @@ class accountInvoice(models.Model):
 			if not conf_info:
 				raise UserError(_("Please configure the FIRS app before you could upload the report!"))
 			
-			date_invoice = invoice.date_invoice.strftime("%Y-%m-%d")
-			date_invoice = datetime.strptime(date_invoice,DEFAULT_SERVER_DATETIME_FORMAT)
+			date_invoice = invoice.invoice_date.strftime("%Y-%m-%d")
+			date_invoice = datetime.strptime(date_invoice, "%Y-%m-%d")
 			date_invoice = date_invoice.isoformat()
 			amount_total = "{:0.2f}".format(invoice.amount_total)
 			url = "https://ecitizen.firs.gov.ng/en/security-code-verify/"
@@ -584,7 +584,7 @@ class accountInvoice(models.Model):
 				
 			_logger.warning('XXXXXXXXXXXXXX: %s', data_dict)
 			# raise Warning(data_dict)
-			r = requests.post('https://atrs-api.firs.gov.ng/v1/bills/report',  data=json.dumps(data_dict), headers=headers)
+			r = requests.post('https://api-dev.i-fis.com/v1/bill/report',  data=json.dumps(data_dict), headers=headers)
 			if r.status_code==200:
 				resp = r.json()
 				if type(resp)==dict and 'payment_code' in resp:
