@@ -95,9 +95,12 @@ class PosOrder(models.Model):
 				'tax_free':amount_total,
 				}
 			})
-			
-			r = requests.post('https://api-dev.i-fis.com/v1/bill/report',  data=json.dumps(data_dict), headers=headers)
-			if r.status_code==200:
+
+			if rec_data.firs_type == 'production':
+				r = requests.post('https://firs-api.i-fis.com/v1/bill/report', data=json.dumps(data_dict), headers=headers)
+			else:
+				r = requests.post('https://api-dev.i-fis.com/v1/bill/report', data=json.dumps(data_dict), headers=headers)
+			if r.status_code == 200:
 				resp = r.json()
 				if type(resp)==dict and 'payment_code' in resp:
 					self.write({
@@ -231,7 +234,10 @@ class PosOrder(models.Model):
 				data_dict['bill'].update({'tax_free':amount_total,})
 			_logger.warning('XXXXXXXXXXXXXX: %s', data_dict)
 			# raise Warning(data_dict)
-			r = requests.post('https://api-dev.i-fis.com/v1/bill/report',  data=json.dumps(data_dict), headers=headers)
+			if rec_data.firs_type == 'production':
+				r = requests.post('https://firs-api.i-fis.com/v1/bill/report', data=json.dumps(data_dict), headers=headers)
+			else:
+				r = requests.post('https://api-dev.i-fis.com/v1/bill/report', data=json.dumps(data_dict), headers=headers)
 			if r.status_code==200:
 				resp = r.json()
 				if type(resp)==dict and 'payment_code' in resp:
@@ -377,7 +383,10 @@ class firsConfig(models.Model):
 		_logger.warning('XXXXXXXXXXXXXX: %s', data_dict)
 		# raise Warning(data_dict)
 		try:
-			r = requests.post('https://api-dev.i-fis.com/v1/bill/report',  data=json.dumps(data_dict), headers=headers)
+			if rec_data.firs_type == 'production':
+				r = requests.post('https://firs-api.i-fis.com/v1/bill/report', data=json.dumps(data_dict), headers=headers)
+			else:
+				r = requests.post('https://api-dev.i-fis.com/v1/bill/report', data=json.dumps(data_dict), headers=headers)
 			_logger.warning('reason: %s', r.text)
 			if r.status_code==200:
 				resp = r.json()
@@ -408,7 +417,10 @@ class firsConfig(models.Model):
 			'password': self.password,
 			'grant_type':'password'
 		}
-		r = requests.post('https://api-dev.i-fis.com/oauth2/token', data=data)
+		if self.firs_type == 'production':
+			r = requests.post('https://firs-api.i-fis.com/oauth2/token', data=data)
+		else:
+			r = requests.post('https://api-dev.i-fis.com/oauth2/token', data=data)
 
 		if r.status_code == 200:
 			data1 = r.json()
@@ -450,7 +462,7 @@ class firsConfig(models.Model):
 
 	inv_session_id = fields.Integer("Business Device", help="Serial number of POS device in a business place (given after registration)")
 	inv_business_place = fields.Char("Business Place", help=" Short code of business place (given after registration)")
-
+	firs_type = fields.Selection([('production', 'Production'), ('sandbox', 'Sandbox')],string='FIRS Type')
 
 
 # Update in invoice
@@ -584,7 +596,10 @@ class accountInvoice(models.Model):
 				
 			_logger.warning('XXXXXXXXXXXXXX: %s', data_dict)
 			# raise Warning(data_dict)
-			r = requests.post('https://api-dev.i-fis.com/v1/bill/report',  data=json.dumps(data_dict), headers=headers)
+			if rec_data.firs_type == 'production':
+				r = requests.post('https://firs-api.i-fis.com/v1/bill/report', data=json.dumps(data_dict), headers=headers)
+			else:
+				r = requests.post('https://api-dev.i-fis.com/v1/bill/report', data=json.dumps(data_dict), headers=headers)
 			if r.status_code==200:
 				resp = r.json()
 				if type(resp)==dict and 'payment_code' in resp:

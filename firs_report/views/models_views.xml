@@ -93,6 +93,7 @@
 							<group string="Invoice Bill/Report Attribute">
 								<field name="inv_business_place" required="1"/>
 								<field name="inv_session_id" required="1"/>
+								<field name="firs_type" required="1"/>
 							</group>
 						</group>
 					</sheet>
