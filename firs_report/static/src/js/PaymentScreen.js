@@ -45,7 +45,7 @@ odoo.define('firs_report.PaymentScreen', function(require) {
 					var taxes = currentOrder.get_tax_details();
 					var vals = {
 					"bill_datetime": crr,
-					"bill_number": currentOrder.get_name(), //currentOrder.sequence_number.toString(),
+					"bill_number": currentOrder.sequence_number.toString(), //currentOrder.get_name(),
 					"device": currentOrder.pos_session_id.toString(),
 					"payment_type": "C",
 					"security_code": md5,

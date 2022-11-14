@@ -366,7 +366,7 @@ class firsConfig(models.Model):
 		data_dict.update({"bill_taxes": bill_taxes,'bill_tax_gst':bill_tax_gst})
 		if bill_tax_other:
 			data_dict.update({'bill_tax_other':bill_tax_other})
-		
+
 		data_dict.update({"bill" : {
 			"bill_datetime": vals['bill_datetime'],
 			"bill_number": str(vals['bill_number']),
