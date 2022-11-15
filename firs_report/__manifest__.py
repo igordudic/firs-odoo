@@ -7,7 +7,7 @@
   "summary" : "This module provides ATRS Integration with Odoo POS",
   "category" : "Point Of Sale",
   "sequence"  : 1,
-  "version": '14.0.0.3',
+  "version": '14.0.0.4',
   "depends" : ['point_of_sale','account'],
   "data"  : [
             'security/ir.model.access.csv',
