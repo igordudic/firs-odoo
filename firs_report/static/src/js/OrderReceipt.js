@@ -11,7 +11,6 @@ odoo.define('firs_report.OrderReceipt', function(require) {
              * is paid with mercury.
              */
             get getReceiptQRCodeValue() {
-                
 				let order = this.env.pos.get_order();
 				if (order.sk_uid !== undefined && order.sk_uid !==null && order.sk_uid !== false){
 		        	var url = "https://ecitizen.firs.gov.ng/en/payment-code-verify/"+order.sk_uid;
