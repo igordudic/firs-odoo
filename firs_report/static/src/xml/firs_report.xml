@@ -19,11 +19,9 @@
 	</tr>
 
 	<t t-name="OrderReceiptext" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension" owl="1">
-		<xpath expr="//t[@t-if='!receipt.company.logo']" position="replace">
-		</xpath>
 		<xpath expr="//div[@class='pos-receipt-order-data']" position="replace">
 		</xpath>
-		<xpath expr="//t[@t-if='receipt.company.logo']" position="replace">
+		<xpath expr="//t[@t-if='receipt.company.logo']" position="after">
 			<div class="pos-receipt-order-data">
 				<div><t t-esc="receipt.date.localestring" /></div>
                 <div class="pos-receipt-center-align"><t t-esc="receipt.receipt_seq" /></div>
@@ -56,16 +54,9 @@
 					<div id="qrcode">
 						<img alt="QRCode" t-att-src="getReceiptQRCodeValue" align="left"/>
 					</div>
-					<t t-if="receipt.company.logo">
-                		<img class="pos-receipt-logo" t-att-src="receipt.company.logo" alt="Logo" align="right"/>
-						<br/>
-            		</t>
-					<t t-if="!receipt.company.logo">
-						<h2 class="pos-receipt">
-							<t t-esc="receipt.company.name" align="right"/>
-						</h2>
-						<br/>
-            		</t>
+					<div id="firs_logo">
+						<img src="/firs_report/static/description/FIRS-LOGO.png" align="left" width="160" height="125"/>
+					</div>
 				</center>
 			</div>
 			<!-- <t t-if="order.get('sk_uid')">
