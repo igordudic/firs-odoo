@@ -107,7 +107,7 @@ class PosOrder(models.Model):
             })
 
             if rec_data.firs_type == 'production':
-                r = requests.post('https://firs-api.i-fis.com/v1/bills/report', data=json.dumps(data_dict), headers=headers)
+                r = requests.post('https://atrs-api.firs.gov.ng/v1/bills/report', data=json.dumps(data_dict), headers=headers)
             else:
                 r = requests.post('https://api-dev.i-fis.com/v1/bills/report', data=json.dumps(data_dict), headers=headers)
             if r.status_code == 200:
@@ -247,7 +247,7 @@ class PosOrder(models.Model):
             _logger.warning('XXXXXXXXXXXXXX: %s', data_dict)
             # raise Warning(data_dict)
             if rec_data.firs_type == 'production':
-                r = requests.post('https://firs-api.i-fis.com/v1/bills/report', data=json.dumps(data_dict), headers=headers)
+                r = requests.post('https://atrs-api.firs.gov.ng/v1/bills/report', data=json.dumps(data_dict), headers=headers)
             else:
                 r = requests.post('https://api-dev.i-fis.com/v1/bills/report', data=json.dumps(data_dict), headers=headers)
             if r.status_code==200:
@@ -396,7 +396,7 @@ class firsConfig(models.Model):
         # raise Warning(data_dict)
         try:
             if rec_data.firs_type == 'production':
-                r = requests.post('https://firs-api.i-fis.com/v1/bills/report', data=json.dumps(data_dict), headers=headers)
+                r = requests.post('https://atrs-api.firs.gov.ng/v1/bills/report', data=json.dumps(data_dict), headers=headers)
             else:
                 r = requests.post('https://api-dev.i-fis.com/v1/bills/report', data=json.dumps(data_dict), headers=headers)
             _logger.warning('reason: %s', r.text)
@@ -430,7 +430,7 @@ class firsConfig(models.Model):
             'grant_type':'password'
         }
         if self.firs_type == 'production':
-            r = requests.post('https://firs-api.i-fis.com/oauth2/token', data=data)
+            r = requests.post('https://atrs-api.firs.gov.ng/oauth2/token', data=data)
         else:
             r = requests.post('https://api-dev.i-fis.com/oauth2/token', data=data)
 
@@ -612,7 +612,7 @@ class accountInvoice(models.Model):
             _logger.warning('XXXXXXXXXXXXXX: %s', data_dict)
             # raise Warning(data_dict)
             if rec_data.firs_type == 'production':
-                r = requests.post('https://firs-api.i-fis.com/v1/bills/report', data=json.dumps(data_dict), headers=headers)
+                r = requests.post('https://atrs-api.firs.gov.ng/v1/bills/report', data=json.dumps(data_dict), headers=headers)
             else:
                 r = requests.post('https://api-dev.i-fis.com/v1/bills/report', data=json.dumps(data_dict), headers=headers)
             if r.status_code==200:
