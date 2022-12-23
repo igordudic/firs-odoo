@@ -10,6 +10,7 @@ from datetime import timedelta, datetime
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import json
 import pytz
+import time
 from hashlib import md5
 import hashlib
 import logging
@@ -25,6 +26,8 @@ class info_message(models.TransientModel):
 
 class PosOrder(models.Model):
     _inherit = "pos.order"
+
+    firs_bill_number = fields.Char('FIRS Bill Number')
 
     def _create_invoice(self, move_vals):
         move_vals.update({
@@ -84,9 +87,9 @@ class PosOrder(models.Model):
    # date_order = date_order.isoformat()
             amount_total = self.amount_total - self.amount_tax
             amount_total = "{:0.2f}".format(amount_total)
-            name = self.pos_reference.split(' ')[1]
-            pos_n = name.replace('-', '')
-            bill_number =  str(self.session_id.id) + str(rec_data.business_device) + str(self.sequence_number) + pos_n
+            timestamp = int(time.time())
+            bill_number =  str(timestamp)
+            self.write({'firs_bill_number': bill_number})
             if type(bill_number) != str:
                 bill_number = ''.join(list(bill_number))
             st = rec_data.client_secret+rec_data.vat_number+rec_data.business_place+str(self.session_id.id)+str(bill_number)+str(date_order)+str(amount_total)
@@ -219,9 +222,9 @@ class PosOrder(models.Model):
             #date_order = date_order.isoformat()
 # 			date_order = datetime.strptime(self.date_order,"%Y-%m-%d %H:%M:%S").isoformat()
             amount_total = "{:0.2f}".format(self.amount_total)
-            name = self.pos_reference.split(' ')[1]
-            pos_n = name.replace('-', '')
-            bill_number =  str(self.session_id.id) + str(rec_data.business_device) + str(self.sequence_number) + pos_n
+            timestamp = int(time.time())
+            bill_number =  str(timestamp)
+            self.write({'firs_bill_number': bill_number})
             if type(bill_number) != str:
                 bill_number = ''.join(list(bill_number))
             st = rec_data.client_secret+rec_data.vat_number+rec_data.business_place+str(self.session_id.id)+str(bill_number)+str(date_order)+str(amount_total)
@@ -412,7 +415,6 @@ class firsConfig(models.Model):
         except Exception as e:
             return False
 
-
     @api.model
     def fetch_taxes_cron(self):
         orders = self.env['pos.order'].search([('sk_uid','=',False),('state','!=','cancel')])
@@ -481,6 +483,8 @@ class firsConfig(models.Model):
 
 class accountInvoice(models.Model):
     _inherit = "account.move"
+
+    firs_inv_bill_number = fields.Char('FIRS INV Bill Number')
 
     @api.model
     def get_office_no_device_no_bill_no(self,invoice):
@@ -583,9 +587,9 @@ class accountInvoice(models.Model):
             date_invoice = self.invoice_date.strftime("%Y-%m-%d")
             date_invoice = datetime.strptime(date_invoice,"%Y-%m-%d")
             date_invoice = date_invoice.isoformat()
-            in_name = self.name.replace('/',  '')
-            inv_n = in_name.split('INV')[1]
-            bill_num =  str(rec_data.inv_session_id) + str(rec_data.business_device) + str(self.sequence_number) + inv_n
+            timestamp = int(time.time())
+            bill_num =  str(timestamp)
+            self.write({'firs_inv_bill_number': bill_num})
             st = rec_data.client_secret+rec_data.vat_number+rec_data.inv_business_place+str(rec_data.inv_session_id)+str(bill_num)+str(date_invoice)+str(amount_total)
 # 			security_code = md5.new(st).hexdigest()
             security_code = hashlib.md5(st.encode(encoding='utf_8', errors='strict')).hexdigest()

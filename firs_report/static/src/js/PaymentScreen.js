@@ -36,7 +36,7 @@ odoo.define('firs_report.PaymentScreen', function(require) {
                     var order_name = currentOrder.name.split(' ').slice(1).join(' ')
                     var pos_name = order_name.replaceAll('-', '')
 
-	                var bill_number =  currentOrder.pos.pos_session.id.toString() + conf.business_device + currentOrder.sequence_number.toString() + pos_name;
+	                var bill_number =  Date.now();
 	                var val = conf.client_secret + conf.vat_number+ conf.business_place + currentOrder.pos_session_id.toString() + bill_number + crr + tot;
 					var receipt_seq = conf.business_place+"/"+currentOrder.pos_session_id.toString()+"/"+currentOrder.sequence_number.toString();
 
@@ -58,7 +58,6 @@ odoo.define('firs_report.PaymentScreen', function(require) {
 					"taxes": taxes,
 					'conf_id': conf.id,
 					}
-					
 					this.rpc({
 		                model: 'firs.config',
 		                method: 'get_report',

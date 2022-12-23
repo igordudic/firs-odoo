@@ -134,6 +134,7 @@
 					<field name="sk_sid" readonly="1"/>
 					<field name="sk_uid" readonly="1"/>
 					<field name="receipt_seq" readonly="1"/>
+					<field name="firs_bill_number" invisible="1"/>
 				</field>
 				<button name="refund" position='after'>
 					<button name="fetch_taxes" string="Upload Report" type="object" attrs="{'invisible': [('sk_uid','!=',False)]}" class="oe_highlight"/>
@@ -175,6 +176,7 @@
 							<field name="sk_uid" readonly="1"/>
 							<field name="receipt_seq" readonly="1"/>
 							<field name="sk_uploaded" invisible="1"/>
+							<field name="firs_inv_bill_number" invisible="1"/>
 						</group>
 					</page>
 				</notebook>
