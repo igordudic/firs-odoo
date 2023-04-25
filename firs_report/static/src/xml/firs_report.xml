@@ -28,19 +28,19 @@
 				<br/>
             </div>
 		</xpath>
-		<xpath expr="//div[@class='pos-receipt-contact']" position="replace">
-			<div class="pos-receipt-contact-left-padding">
-				<t t-if="receipt.company.contact_address">
-                    <div><t t-esc="receipt.company.name" /></div>
-                </t>
-				<t t-if="receipt.company.phone">
-                    <div>Phone:<t t-esc="receipt.company.phone" /></div>
-                </t>
-				<t t-if="receipt.cashier">
-                    <div>User:<t t-esc="receipt.cashier" /></div>
-                </t>
-			</div>
-		</xpath>
+<!--		<xpath expr="//div[@class='pos-receipt-contact']" position="replace">-->
+<!--			<div class="pos-receipt-contact-left-padding">-->
+<!--				<t t-if="receipt.company.contact_address">-->
+<!--                    <div><t t-esc="receipt.company.name" /></div>-->
+<!--                </t>-->
+<!--				<t t-if="receipt.company.phone">-->
+<!--                    <div>Phone:<t t-esc="receipt.company.phone" /></div>-->
+<!--                </t>-->
+<!--				<t t-if="receipt.cashier">-->
+<!--                    <div>User:<t t-esc="receipt.cashier" /></div>-->
+<!--                </t>-->
+<!--			</div>-->
+<!--		</xpath>-->
 		<xpath expr="//div[@class='pos-receipt']" position="inside">
 			<t t-if="receipt.sk_sid">
 				<div class="pos-receipt-center-align">SID: <t t-esc="receipt.sk_sid" /></div>
@@ -138,22 +138,22 @@
 				</tr>
 			</table>
 		</xpath>
-		<xpath expr="//div[@class='pos-receipt-amount receipt-change']" position="replace">
-			<table class='receipt-change' style="width:100%;">
-				<colgroup>
-					<col width='50%' />
-					<col width='50%' />
-				</colgroup>
-				<tr>
-					<td class="pos-left-align">CHANGE:</td>
-					<td class="pos-right-align">
-						<t t-esc="env.pos.format_currency(receipt.change)"/>
-					</td>
-				</tr>
-			</table>
-		</xpath>
-		<xpath expr="//t[@t-if='isTaxIncluded']" position="replace"/>
-		<xpath expr="//t[@t-if='!isTaxIncluded']" position="replace"/>
+<!--		<xpath expr="//div[@class='pos-receipt-amount receipt-change']" position="replace">-->
+<!--			<table class='receipt-change' style="width:100%;">-->
+<!--				<colgroup>-->
+<!--					<col width='50%' />-->
+<!--					<col width='50%' />-->
+<!--				</colgroup>-->
+<!--				<tr>-->
+<!--					<td class="pos-left-align">CHANGE:</td>-->
+<!--					<td class="pos-right-align">-->
+<!--						<t t-esc="env.pos.format_currency(receipt.change)"/>-->
+<!--					</td>-->
+<!--				</tr>-->
+<!--			</table>-->
+<!--		</xpath>-->
+<!--		<xpath expr="//t[@t-if='isTaxIncluded']" position="replace"/>-->
+<!--		<xpath expr="//t[@t-if='!isTaxIncluded']" position="replace"/>-->
 	</t>
 
     <t t-name="TaxFreeButton" owl="1">
