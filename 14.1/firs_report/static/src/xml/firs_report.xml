@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+	<tr t-extend="ListView.row">
+		<t t-jquery="t[t-foreach*='columns'][t-as*='column']:last td" t-operation="replace">			
+			<t t-if="column.id === 'firs_status' and column.class==='firs_status_check'">
+				<td t-if="!column.meta and column.invisible !== '1'" t-att-title="column.help"
+		            t-attf-class="#{modifiers.readonly ? 'o_readonly' : ''} #{number ? 'o_list_number' : ''} #{text ? 'o_list_text' : ''} #{column.id === 'sequence' ? 'o_handle_cell' : ''} #{column.tag === 'button' ? 'o_list_button' : ''}"
+		            t-att-data-field="column.id"
+		            t-attf-style="#{record.get(column.id) === 'Uploaded' ? 'color:green;' : 'color:red;'}"
+		            ><t t-raw="render_cell(record, column)"/></td>
+            </t>
+			<t t-else="">
+				<td t-if="!column.meta and column.invisible !== '1'" t-att-title="column.help"
+		            t-attf-class="#{modifiers.readonly ? 'o_readonly' : ''} #{number ? 'o_list_number' : ''} #{text ? 'o_list_text' : ''} #{column.id === 'sequence' ? 'o_handle_cell' : ''} #{column.tag === 'button' ? 'o_list_button' : ''}"
+		            t-att-data-field="column.id"
+		            ><t t-raw="render_cell(record, column)"/></td>
+            </t>
+	    </t>
+	</tr>
+
+	<t t-name="OrderReceiptext" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension" owl="1">
+		<xpath expr="//div[@class='pos-receipt-order-data']" position="replace">
+		</xpath>
+		<xpath expr="//t[@t-if='receipt.company.logo']" position="after">
+			<div class="pos-receipt-order-data">
+				<div><t t-esc="receipt.date.localestring" /></div>
+                <div class="pos-receipt-center-align"><t t-esc="receipt.receipt_seq" /></div>
+				<br/>
+            </div>
+		</xpath>
+<!--		<xpath expr="//div[@class='pos-receipt-contact']" position="replace">-->
+<!--			<div class="pos-receipt-contact-left-padding">-->
+<!--				<t t-if="receipt.company.contact_address">-->
+<!--                    <div><t t-esc="receipt.company.name" /></div>-->
+<!--                </t>-->
+<!--				<t t-if="receipt.company.phone">-->
+<!--                    <div>Phone:<t t-esc="receipt.company.phone" /></div>-->
+<!--                </t>-->
+<!--				<t t-if="receipt.cashier">-->
+<!--                    <div>User:<t t-esc="receipt.cashier" /></div>-->
+<!--                </t>-->
+<!--			</div>-->
+<!--		</xpath>-->
+		<xpath expr="//div[@class='pos-receipt']" position="inside">
+			<t t-if="receipt.sk_sid">
+				<div class="pos-receipt-center-align">SID: <t t-esc="receipt.sk_sid" /></div>
+			</t>
+			<t t-if="receipt.sk_uid">
+				<div class="pos-receipt-center-align">UID: <t t-esc="receipt.sk_uid" /></div>
+			</t>
+			<div class="pos-receipt-center-align">Check if your receipt is valid:</div>
+			<div style="margin-top: 10px;">
+				<center>
+					<div id="qrcode">
+						<img alt="QRCode" t-att-src="getReceiptQRCodeValue" align="left"/>
+					</div>
+					<div id="firs_logo">
+						<img src="/firs_report/static/description/FIRS-LOGO.png" align="left" width="160" height="125"/>
+					</div>
+				</center>
+			</div>
+			<!-- <t t-if="order.get('sk_uid')">
+				<div style="margin-top: 10px;">
+					<center>
+						<img id='barcode'
+						t-attf-src="https://api.qrserver.com/v1/create-qr-code/?data=https://ecitizen.i-fis.com.ng/en/payment-code-verify/#{order.get('sk_uid')}"
+						alt=""
+						width="100"
+						height="100" />
+					</center>
+				</div>
+			</t>
+			<t t-else=''>
+				<t t-set="conf_info" t-value="widget.pos.get('conf_info')"/>
+				<div style="margin-top: 10px;">
+					<center>
+						<img id='barcode'
+						t-attf-src="https://api.qrserver.com/v1/create-qr-code/?data=https://ecitizen.i-fis.com.ng/en/security-code-verify/#{conf_info.vat_number}~#{order.sequence_number}~#{conf_info.business_place}~#{order.pos_session_id}~#{order.get('bill_datetime')}~#{order.get_total_with_tax().toFixed(2).toString()}~#{order.get('sk_sid')}"
+						alt=""
+						width="100"
+						height="100" />
+					</center>
+				</div>
+			</t> -->
+		</xpath>
+		<xpath expr="//div/div[@class='orderlines']" position="replace">
+   	 		<div class="orderlines">
+   	 			<table class='receipt-orderlines' style="width:100%;">
+                	<colgroup>
+	                    <col width='50%' />
+						<col width='25%' />
+						<col width='25%' />
+                	</colgroup>
+					<tr t-foreach="orderlines" t-as="orderline">
+	                    <td>
+	                        <t t-esc="orderline.get_product().display_name"/>
+							<t t-if="orderline.get_discount() > 0">
+                            	<div class="pos-disc-font">
+                           		   	  With a <t t-esc="orderline.get_discount()"/>% discount
+                            	</div>
+                        	</t>
+                    	</td>
+						<td class="pos-right-align">
+	                        <t t-esc="orderline.get_quantity_str_with_unit()"/>
+	                    </td>
+						<td class="pos-right-align">
+	                        <t t-esc="env.pos.format_currency(orderline.get_display_price())"/>
+	                    </td>
+                	</tr>
+            	</table>
+            </div>
+        </xpath>
+		<xpath expr="//div/div[hasclass('pos-receipt-amount')][1]" position="replace">
+			<table class='receipt-total' style="width:100%;">
+				<colgroup>
+					<col width='50%' />
+					<col width='50%' />
+				</colgroup>
+				<tr class="emph">
+                    <td>Subtotal:</td>
+					<td class="pos-right-align">
+                        <t t-esc="env.pos.format_currency(receipt.subtotal)"/>
+                    </td>
+                </tr>
+				<t t-foreach="receipt.tax_details" t-as="tax" t-key="tax.name">
+                    <tr class="emph">
+                        <td><t t-esc="tax.name"/></td>
+						<td class="pos-right-align">
+                            <t t-esc="env.pos.format_currency_no_symbol(tax.amount)"/>
+                        </td>
+                    </tr>
+				</t>
+				<tr class="emph">
+					<td class="pos-left-align" style="font-weight: bold; font-size: 20px;">Total:</td>
+					<td class="pos-right-align" style="font-weight: bold; font-size: 20px;">
+						<t t-esc="env.pos.format_currency(receipt.total_with_tax)"/>
+					</td>
+				</tr>
+			</table>
+		</xpath>
+<!--		<xpath expr="//div[@class='pos-receipt-amount receipt-change']" position="replace">-->
+<!--			<table class='receipt-change' style="width:100%;">-->
+<!--				<colgroup>-->
+<!--					<col width='50%' />-->
+<!--					<col width='50%' />-->
+<!--				</colgroup>-->
+<!--				<tr>-->
+<!--					<td class="pos-left-align">CHANGE:</td>-->
+<!--					<td class="pos-right-align">-->
+<!--						<t t-esc="env.pos.format_currency(receipt.change)"/>-->
+<!--					</td>-->
+<!--				</tr>-->
+<!--			</table>-->
+<!--		</xpath>-->
+		<xpath expr="//t[@t-if='isTaxIncluded']" position="replace"/>
+		<xpath expr="//t[@t-if='!isTaxIncluded']" position="replace"/>
+	</t>
+
+    <t t-name="TaxFreeButton" owl="1">
+        <span class="control-button order-taxfree" t-on-click="onClick">
+            <i class="fa fa-print"></i>
+            <span> </span>
+            <span>Tax Free</span>
+        </span>
+    </t>
+    <!-- <t t-name="TaxFreeButton" name="Tax Free Button" owl="1">
+    	<span class="control-button order-taxfree" style="min-width:90%;margin-left:0px;">
+                <i class="fa fa-print"></i>
+                Tax Free
+        </span>
+   	</t> -->
+   	
+</templates>
