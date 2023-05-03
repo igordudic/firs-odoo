@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="assets_pos_print_kitchen_browser" inherit_id="point_of_sale.assets">
+            <xpath expr="." position="inside">
+                <script type="text/javascript" src="/pos_print_order_kitchen_browser/static/src/js/pos_print_kitchen_browser.js"></script>
+                <script type="text/javascript" src="/pos_print_order_kitchen_browser/static/src/js/OrderKitchenReceipt.js"></script>
+            </xpath>
+        </template>
+    </data>
+</odoo>

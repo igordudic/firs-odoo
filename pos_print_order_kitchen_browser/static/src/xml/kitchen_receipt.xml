@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+
+    <t t-name="OrderKitchenReceipt" owl="1">
+        <div class="pos-receipt">
+            <div class="pos-receipt-order-data"><t t-esc="changes.name" /></div>
+            <t t-if="changes.floor || changes.table">
+                <br />
+                <div class="pos-receipt-title">
+                    <t t-esc="changes.floor" /> / <t t-esc="changes.table"/>
+                </div>
+            </t>
+            <br />
+            <br />
+            <t t-if="changes.cancelled.length > 0">
+                <div class="pos-order-receipt-cancel">
+                    <div class="pos-receipt-title">
+                        CANCELLED
+                        <t t-esc='changes.time.hours'/>:<t t-esc='changes.time.minutes'/>
+                    </div>
+                    <br />
+                    <br />
+                    <t t-foreach="changes.cancelled" t-as="change">
+                        <div>
+                            <t t-esc="change.qty"/>
+                            <span t-esc="change.name_wrapped[0]" class="pos-receipt-right-align"/>
+                        </div>
+                        <!-- <t t-call="NameWrapped"/> -->
+                        <t t-if="change.note">
+                            <div>
+                                NOTE
+                                <span class="pos-receipt-right-align">...</span>
+                            </div>
+                            <div><span class="pos-receipt-left-padding">--- <t t-esc="change.note" /></span></div>
+                            <br/>
+                        </t>
+                    </t>
+                    <br />
+                    <br />
+                </div>
+            </t>
+            <t t-if="changes.new.length > 0">
+                <div class="pos-receipt-title">
+                    NEW
+                    <t t-esc='changes.time.hours'/>:<t t-esc='changes.time.minutes'/>
+                </div>
+                <br />
+                <br />
+                <t t-foreach="changes.new" t-as="change">
+                    <div>
+                        <t t-esc="change.qty"/>
+                        <span t-esc="change.name_wrapped[0]" class="pos-receipt-right-align"/>
+                    </div>
+                    <!-- <t t-call="NameWrapped"/> -->
+                    <t t-if="change.note">
+                        <div>
+                            NOTE
+                            <span class="pos-receipt-right-align">...</span>
+                        </div>
+                        <div><span class="pos-receipt-left-padding">--- <t t-esc="change.note" /></span></div>
+                        <br/>
+                    </t>
+                </t>
+                <br />
+                <br />
+            </t>
+        </div>
+    </t>
+
+    <t t-name="KotScreen" owl="1">
+        <div class="receipt-screen screen">
+            <div class="screen-content">
+                <div class="top-content">
+                    <div class="top-content-center">
+                        <h1 t-if="!env.isMobile">
+                            <t t-esc="orderAmountPlusTip" />
+                        </h1>
+                    </div>
+                    <span class="button back" t-on-click="confirm">
+                        <i class="fa fa-angle-double-left"></i>
+                        <span> </span>
+                        <span>Back</span>
+                    </span>
+                </div>
+                <div class="default-view">
+                    <div class="pos-receipt-container">
+                        <OrderKitchenReceipt changes="props.changes" t-ref="order-kot-receipt" />
+                    </div>
+                    <div class="actions">
+                        <h1>How would you like to receive your receipt?</h1>
+                        <div class="buttons">
+                            <div class="button print" t-on-click="printReceipt">
+                                <i class="fa fa-print"></i> Print Receipt
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>
