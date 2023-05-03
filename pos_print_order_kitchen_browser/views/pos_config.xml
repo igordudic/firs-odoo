@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record id="inherit_view_pos_config_form" model="ir.ui.view">
+            <field name="name">inherit.pos.config</field>
+            <field name="model">pos.config</field>
+            <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+            <field name="arch" type="xml">
+
+                <xpath expr="//div[@id='is_order_printer']" position="after">
+                    <div class="col-12 col-lg-6 o_setting_box"
+                     id="print_kitchen_order_in_browser">
+                    <div class="o_setting_left_pane">
+                        <field name="print_kot_in_browser"/>
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="print_kot_in_browser"/>
+                        <span class="fa fa-lg fa-desktop" title="lock" role="img" aria-label="lock"/>
+                        <div class="text-muted">
+                            Print kitchen order in browser
+                        </div>
+                    </div>
+                </div>
+                </xpath>
+
+            </field>
+
+
+        </record>
+    </data>
+</odoo>
