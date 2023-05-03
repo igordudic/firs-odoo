@@ -533,26 +533,14 @@ class accountInvoice(models.Model):
     def write(self, values):
         result = super(accountInvoice, self).write(values)
         if 'state' in values and values.get('state', False) == "posted":
-            self.fetch_taxes()
+                self.fetch_taxes()
         return result
-
-    def action_tax_free(self):
-        required_tax_group = []
-        for line in self.invoice_line_ids:
-            for tax in line.tax_ids:
-                required_tax_group.append(tax.mapped('tax_group_id').id)
-        required_account = [i for i in required_tax_group if i]
-        line_to_remove = self.line_ids.filtered(lambda x:x.tax_group_id.id in required_account)
-        for line in self.invoice_line_ids:
-            line.write({'tax_ids': [(5, 0, 0)]})
-        line_to_remove.sudo().with_context(check_move_validity=False).unlink()
-
 
     # 	@api.multi
     def fetch_taxes(self):
         if self.sk_uploaded:
             return True
-        rec_data = self.env['firs.config'].search([], limit=1)
+        rec_data = self.env['firs.config'].search([],limit=1)
         if not rec_data:
             raise UserError(_("Please configure the FIRS app before you could upload the report!"))
         crr = str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
@@ -573,7 +561,7 @@ class accountInvoice(models.Model):
             data_dict = {}
             if self.amount_tax != 0.0:
                 for tl in self.line_ids:
-                    if tl.tax_line_id:
+                  if tl.tax_line_id:
                         if tl.tax_line_id.tax_type == 'Vat':
                             bill_taxes.append({
                                 "rate": "{:.2f}".format(tl.tax_line_id.amount),
@@ -604,6 +592,7 @@ class accountInvoice(models.Model):
                     "rate": "{:.2f}".format(0),
                     "value": "{:.2f}".format(0),
                 }]
+
             amount_total = "{:0.2f}".format(self.amount_total)
             date_invoice = self.invoice_date.strftime("%Y-%m-%d")
             date_invoice = datetime.strptime(date_invoice, "%Y-%m-%d")
@@ -628,13 +617,11 @@ class accountInvoice(models.Model):
                 "payment_type": "C",
                 "security_code": str(security_code),
                 "total_value": amount_total,
-                'vat_number': str(rec_data.vat_number),
-                "client_vat_number" : self.partner_id.vat,
-                "tax_free":"{:.2f}".format(currency.round(self.amount_untaxed))
+                'vat_number': str(rec_data.vat_number)
             }
             })
             if self.amount_tax == 0.0:
-                data_dict['bill'].update({'tax_free': amount_total})
+                data_dict['bill'].update({'tax_free': amount_total, })
 
             _logger.warning('XXXXXXXXXXXXXX: %s', data_dict)
             # raise Warning(data_dict)
@@ -663,3 +650,5 @@ class accountInvoice(models.Model):
     sk_uid = fields.Char("UID", copy=False)
     receipt_seq = fields.Char("Order Sequence", copy=False)
     sk_uploaded = fields.Boolean("Uploaded", copy=False)
+
+
