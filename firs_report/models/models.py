@@ -739,10 +739,10 @@ class accountInvoice(models.Model):
             _logger.warning('XXXXXXXXXXXXXX: %s', data_dict)
             # raise Warning(data_dict)
             if rec_data.firs_type == 'production':
-                r = requests.post('https://atrs-api.firs.gov.ng/v1/bills/report', data=json.dumps(data_dict),
+                 requests.post('https://atrs-api.firs.gov.ng/v1/bills/report', data=json.dumps(data_dict),
                                   headers=headers)
             else:
-                r = requests.post('https://api-dev.i-fis.com/v1/bills/report', data=json.dumps(data_dict),
+                 requests.post('https://api-dev.i-fis.com/v1/bills/report', data=json.dumps(data_dict),
                                   headers=headers)
 
     sk_sid = fields.Char("SID", copy=False)

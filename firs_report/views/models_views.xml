@@ -170,6 +170,9 @@
                <button name="action_tax_free" string="Tax Exempt" attrs="{'invisible':['|',('state', '!=', 'draft'), ('amount_tax', '=', 0)]}" class="btn-primary" type="object"> </button>
                <button name="cancel_invoice_firs" string="Cancel" attrs="{'invisible':[('state', 'in', ['draft','cancel'])]}" class="btn-primary" type="object"> </button>
                </xpath>
+				<xpath expr="//button[@name='button_cancel']" position="attributes">
+					<attribute name="invisible">1</attribute>
+				</xpath>
 				<notebook position="inside">
 					<page string="FIRS Info">
 						<group>
