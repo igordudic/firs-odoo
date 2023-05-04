@@ -536,6 +536,7 @@ class accountInvoice(models.Model):
             self.fetch_taxes()
         return result
 
+
     def action_tax_free(self):
         required_tax_group = []
         for line in self.invoice_line_ids:
@@ -564,7 +565,6 @@ class accountInvoice(models.Model):
             "Content-Type": "application/json",
             "Authorization": auth
         }
-
         currency = self.currency_id
         if self.amount_total != 0.0:
             bill_taxes = []
@@ -609,7 +609,7 @@ class accountInvoice(models.Model):
             date_invoice = datetime.strptime(date_invoice, "%Y-%m-%d")
             date_invoice = date_invoice.isoformat()
             timestamp = int(time.time())
-            bill_num = str(timestamp)
+            bill_num = str(timestamp)+str('0')+str(self.id)
             self.write({'firs_inv_bill_number': bill_num})
             st = rec_data.client_secret + rec_data.vat_number + rec_data.inv_business_place + str(
                 rec_data.inv_session_id) + str(bill_num) + str(date_invoice) + str(amount_total)
@@ -619,7 +619,6 @@ class accountInvoice(models.Model):
             data_dict.update({"bill_taxes": bill_taxes, 'bill_tax_gst': bill_tax_gst})
             if bill_tax_other:
                 data_dict.update({'bill_tax_other': bill_tax_other})
-
             data_dict.update({"bill": {
                 "bill_datetime": date_invoice,
                 "bill_number": bill_num,
@@ -658,6 +657,93 @@ class accountInvoice(models.Model):
             else:
                 raise Warning(r.text)
             return True
+
+    def cancel_invoice_firs(self):
+        self.button_draft()
+        self.button_cancel()
+        rec_data = self.env['firs.config'].search([], limit=1)
+        crr = str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        active_till = str(rec_data.active_till.strftime('%Y-%m-%d %H:%M:%S'))
+        if crr > active_till:
+            rec_data.test_connection()
+        auth = rec_data.auth_type + " " + rec_data.auth_token
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": auth
+        }
+        currency = self.currency_id
+        if self.amount_total != 0.0:
+            bill_taxes = []
+            bill_tax_gst = []
+            bill_tax_other = []
+            data_dict = {}
+            if self.amount_tax != 0.0:
+                for tl in self.line_ids:
+                    if tl.tax_line_id:
+                        if tl.tax_line_id.tax_type == 'Vat':
+                            bill_taxes.append({
+                                "rate": "{:.2f}".format(tl.tax_line_id.amount),
+                                "base_value": "{:.2f}".format(currency.round(-(tl.tax_base_amount))),
+                                "value": "{:.2f}".format(currency.round(-(tl.price_subtotal)))
+                            })
+                        elif tl.tax_line_id.tax_type == 'Consumption':
+                            bill_tax_gst.append({
+                                "rate": "{:.2f}".format(tl.tax_line_id.amount),
+                                "base_value": "{:.2f}".format(currency.round(-(tl.tax_base_amount))),
+                                "value": "{:.2f}".format(currency.round(-(tl.price_subtotal)))
+                            })
+                        else:
+                            bill_tax_other.append({
+                                'tax_name': tl.tax_line_id.name,
+                                "rate": "{:.2f}".format(tl.tax_line_id.amount),
+                                "base_value": "{:.2f}".format(currency.round(tl.tax_base_amount)),
+                                "value": "{:.2f}".format(currency.round(tl.price_subtotal))
+                            })
+            else:
+                bill_taxes = [{
+                    "base_value": "{:.2f}".format(currency.round(-(self.amount_total - self.amount_tax))),
+                    "rate": "{:.2f}".format(0),
+                    "value": "{:.2f}".format(0),
+                }]
+                bill_tax_gst = [{
+                    "base_value": "{:.2f}".format(currency.round(-(self.amount_total - self.amount_tax))),
+                    "rate": "{:.2f}".format(0),
+                    "value": "{:.2f}".format(0),
+                }]
+            amount_total = "{:0.2f}".format(-(self.amount_total))
+            date_invoice = self.invoice_date.strftime("%Y-%m-%d")
+            date_invoice = datetime.strptime(date_invoice, "%Y-%m-%d")
+            date_invoice = date_invoice.isoformat()
+            timestamp = int(time.time())
+            bill_num = str(timestamp) + str('0') + str(self.id)
+            self.write({'firs_inv_bill_number': bill_num})
+            data_dict.update({"bill_taxes": bill_taxes, 'bill_tax_gst': bill_tax_gst})
+            if bill_tax_other:
+                data_dict.update({'bill_tax_other': bill_tax_other})
+            data_dict.update({"bill": {
+                "bill_datetime": date_invoice,
+                "bill_number": bill_num,
+                "business_device": str(rec_data.inv_session_id),
+                "business_place": str(rec_data.inv_business_place),
+                "payment_type": "C",
+                "security_code": str(self.sk_sid),
+                "total_value": amount_total,
+                'vat_number': str(rec_data.vat_number),
+                "client_vat_number": self.partner_id.vat,
+                "tax_free": "{:.2f}".format(currency.round(-(self.amount_untaxed)))
+            }
+            })
+            if self.amount_tax == 0.0:
+                data_dict['bill'].update({'tax_free': amount_total})
+
+            _logger.warning('XXXXXXXXXXXXXX: %s', data_dict)
+            # raise Warning(data_dict)
+            if rec_data.firs_type == 'production':
+                r = requests.post('https://atrs-api.firs.gov.ng/v1/bills/report', data=json.dumps(data_dict),
+                                  headers=headers)
+            else:
+                r = requests.post('https://api-dev.i-fis.com/v1/bills/report', data=json.dumps(data_dict),
+                                  headers=headers)
 
     sk_sid = fields.Char("SID", copy=False)
     sk_uid = fields.Char("UID", copy=False)

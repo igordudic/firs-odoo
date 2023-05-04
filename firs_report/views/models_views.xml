@@ -166,8 +166,9 @@
 			<field name="model">account.move</field>
 			<field name="inherit_id" ref="account.view_move_form" />
 			<field name="arch" type="xml">
-                <xpath expr="//button[@name='action_post']" position="after">
+                <xpath expr="//button[@name='action_post'][2]" position="after">
                <button name="action_tax_free" string="Tax Exempt" attrs="{'invisible':['|',('state', '!=', 'draft'), ('amount_tax', '=', 0)]}" class="btn-primary" type="object"> </button>
+               <button name="cancel_invoice_firs" string="Cancel" attrs="{'invisible':[('state', 'in', ['draft','cancel'])]}" class="btn-primary" type="object"> </button>
                </xpath>
 				<notebook position="inside">
 					<page string="FIRS Info">
@@ -179,7 +180,7 @@
 							<field name="sk_uid" readonly="1"/>
 							<field name="receipt_seq" readonly="1"/>
 							<field name="sk_uploaded" invisible="1"/>
-							<field name="firs_inv_bill_number" invisible="1"/>
+							<field name="firs_inv_bill_number" />
 						</group>
 					</page>
 				</notebook>
