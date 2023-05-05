@@ -656,7 +656,7 @@ class accountInvoice(models.Model):
                     raise Warning(r.text)
             else:
                 raise Warning(r.text)
-            # return True
+            return True
 
     def cancel_invoice_firs(self):
         self.button_draft()
