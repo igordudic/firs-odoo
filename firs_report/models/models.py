@@ -656,16 +656,12 @@ class accountInvoice(models.Model):
                     raise Warning(r.text)
             else:
                 raise Warning(r.text)
-            return True
+            # return True
 
     def cancel_invoice_firs(self):
         self.button_draft()
         self.button_cancel()
         rec_data = self.env['firs.config'].search([], limit=1)
-        crr = str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-        active_till = str(rec_data.active_till.strftime('%Y-%m-%d %H:%M:%S'))
-        if crr > active_till:
-            rec_data.test_connection()
         auth = rec_data.auth_type + " " + rec_data.auth_token
         headers = {
             "Content-Type": "application/json",
@@ -710,13 +706,16 @@ class accountInvoice(models.Model):
                     "rate": "{:.2f}".format(0),
                     "value": "{:.2f}".format(0),
                 }]
-            amount_total = "{:0.2f}".format(-(self.amount_total))
+            amount_total = ("{:0.2f}".format(-abs(self.amount_total)))
             date_invoice = self.invoice_date.strftime("%Y-%m-%d")
             date_invoice = datetime.strptime(date_invoice, "%Y-%m-%d")
             date_invoice = date_invoice.isoformat()
             timestamp = int(time.time())
             bill_num = str(timestamp) + str('0') + str(self.id)
             self.write({'firs_inv_bill_number': bill_num})
+            st = rec_data.client_secret + rec_data.vat_number + rec_data.inv_business_place + str(
+                rec_data.inv_session_id) + str(bill_num) + str(date_invoice) + str(amount_total)
+            security_code = hashlib.md5(st.encode(encoding='utf_8', errors='strict')).hexdigest()
             data_dict.update({"bill_taxes": bill_taxes, 'bill_tax_gst': bill_tax_gst})
             if bill_tax_other:
                 data_dict.update({'bill_tax_other': bill_tax_other})
@@ -726,25 +725,23 @@ class accountInvoice(models.Model):
                 "business_device": str(rec_data.inv_session_id),
                 "business_place": str(rec_data.inv_business_place),
                 "payment_type": "C",
-                "security_code": str(self.sk_sid),
+                "security_code": security_code,
                 "total_value": amount_total,
                 'vat_number': str(rec_data.vat_number),
                 "client_vat_number": self.partner_id.vat,
-                "tax_free": "{:.2f}".format(currency.round(-(self.amount_untaxed)))
+                "tax_free": "{:.2f}".format(currency.round(-abs(self.amount_untaxed)))
             }
             })
             if self.amount_tax == 0.0:
                 data_dict['bill'].update({'tax_free': amount_total})
 
             _logger.warning('XXXXXXXXXXXXXX: %s', data_dict)
-            # raise Warning(data_dict)
             if rec_data.firs_type == 'production':
                  requests.post('https://atrs-api.firs.gov.ng/v1/bills/report', data=json.dumps(data_dict),
                                   headers=headers)
             else:
                  requests.post('https://api-dev.i-fis.com/v1/bills/report', data=json.dumps(data_dict),
                                   headers=headers)
-
     sk_sid = fields.Char("SID", copy=False)
     sk_uid = fields.Char("UID", copy=False)
     receipt_seq = fields.Char("Order Sequence", copy=False)
