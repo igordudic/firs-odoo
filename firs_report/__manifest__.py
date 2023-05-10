@@ -8,13 +8,14 @@
   "category" : "Point Of Sale",
   "sequence"  : 1,
   "version": '14.0.0.2',
-  "depends" : ['point_of_sale','account'],
+  "depends" : ['base', 'point_of_sale', 'account'],
   "data"  : [
             'security/ir.model.access.csv',
             'views/models_views.xml',
             'views/template.xml',
             'views/account_tax_view.xml',
             'views/report_invoice.xml',
+            'views/account_fiscal_position_view.xml',
             "notify_cron.xml"
           ],
   "qweb"  : ['static/src/xml/firs_report.xml'],

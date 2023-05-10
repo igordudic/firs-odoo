@@ -4,3 +4,4 @@
 #################################################################################
 from . import models
 from . import account_tax
+from . import account_fiscal_position

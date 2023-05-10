@@ -34,7 +34,7 @@ class PosOrder(models.Model):
         move_vals.update({
             'sk_sid': self.sk_sid,
             'sk_uid': self.sk_uid,
-            'receipt_seq': self.receipt_seq
+            'receipt_seq': self.receipt_seq,
         })
         return super(PosOrder, self)._create_invoice(move_vals)
 
@@ -53,6 +53,11 @@ class PosOrder(models.Model):
                     })
         # 				elif not order.sk_uid:
         # 					order.fetch_taxes()
+        return res
+
+    def action_pos_order_invoice(self):
+        res = super(PosOrder, self).action_pos_order_invoice()
+        self.account_move.fetch_taxes()
         return res
 
     def convert_datetime_timezone(self, order_date):
@@ -493,7 +498,7 @@ class firsConfig(models.Model):
 
 # Update in invoice
 
-class accountInvoice(models.Model):
+class AccountInvoice(models.Model):
     _inherit = "account.move"
 
     firs_inv_bill_number = fields.Char('FIRS INV Bill Number')
@@ -529,12 +534,20 @@ class accountInvoice(models.Model):
             url = "https://ecitizen.firs.gov.ng"
         return url
 
-    # 	@api.multi
-    def write(self, values):
-        result = super(accountInvoice, self).write(values)
-        if 'state' in values and values.get('state', False) == "posted":
-            self.fetch_taxes()
-        return result
+    # @api.multi
+    # def write(self, values):
+    #     result = super(AccountInvoice, self).write(values)
+    #     if 'state' in values and values.get('state', False) == "posted":
+    #         self.fetch_taxes()
+    #     return result
+
+    def action_post(self):
+        res = super(AccountInvoice, self).action_post()
+        if not self.fiscal_position_id:
+            raise UserError("Please select fiscal position.")
+        if self.fiscal_position_id.is_accural:
+           self.fetch_taxes()
+        return res
 
 
     def action_tax_free(self):
@@ -551,6 +564,7 @@ class accountInvoice(models.Model):
 
     # 	@api.multi
     def fetch_taxes(self):
+        print("hiiiiiiii")
         if self.sk_uploaded:
             return True
         rec_data = self.env['firs.config'].search([], limit=1)
@@ -619,19 +633,35 @@ class accountInvoice(models.Model):
             data_dict.update({"bill_taxes": bill_taxes, 'bill_tax_gst': bill_tax_gst})
             if bill_tax_other:
                 data_dict.update({'bill_tax_other': bill_tax_other})
-            data_dict.update({"bill": {
-                "bill_datetime": date_invoice,
-                "bill_number": bill_num,
-                "business_device": str(rec_data.inv_session_id),
-                "business_place": str(rec_data.inv_business_place),
-                "payment_type": "C",
-                "security_code": str(security_code),
-                "total_value": amount_total,
-                'vat_number': str(rec_data.vat_number),
-                "client_vat_number" : self.partner_id.vat,
-                "tax_free":"{:.2f}".format(currency.round(self.amount_untaxed))
-            }
-            })
+            if self.is_fiscal_position_accural:
+                    data_dict.update({"bill": {
+                        "bill_datetime": date_invoice,
+                        "bill_number": bill_num,
+                        "business_device": str(rec_data.inv_session_id),
+                        "business_place": str(rec_data.inv_business_place),
+                        "payment_type": str(self.accural_payment_type),
+                        "security_code": str(security_code),
+                        "total_value": amount_total,
+                        'vat_number': str(rec_data.vat_number),
+                        "client_vat_number" : self.partner_id.vat,
+                        "tax_free":"{:.2f}".format(currency.round(self.amount_untaxed))
+                    }
+                    })
+            else:
+                data_dict.update({"bill": {
+                    "bill_datetime": date_invoice,
+                    "bill_number": bill_num,
+                    "business_device": str(rec_data.inv_session_id),
+                    "business_place": str(rec_data.inv_business_place),
+                    "payment_type": "C",
+                    "security_code": str(security_code),
+                    "total_value": amount_total,
+                    'vat_number': str(rec_data.vat_number),
+                    "client_vat_number": self.partner_id.vat,
+                    "tax_free": "{:.2f}".format(
+                        currency.round(self.amount_untaxed))
+                }
+                })
             if self.amount_tax == 0.0:
                 data_dict['bill'].update({'tax_free': amount_total})
 
@@ -737,12 +767,52 @@ class accountInvoice(models.Model):
 
             _logger.warning('XXXXXXXXXXXXXX: %s', data_dict)
             if rec_data.firs_type == 'production':
-                 requests.post('https://atrs-api.firs.gov.ng/v1/bills/report', data=json.dumps(data_dict),
+                 r=requests.post('https://atrs-api.firs.gov.ng/v1/bills/report', data=json.dumps(data_dict),
                                   headers=headers)
             else:
-                 requests.post('https://api-dev.i-fis.com/v1/bills/report', data=json.dumps(data_dict),
+                 r=requests.post('https://api-dev.i-fis.com/v1/bills/report', data=json.dumps(data_dict),
                                   headers=headers)
+            if r.status_code == 200:
+                resp = r.json()
+                if type(resp) == dict and 'payment_code' in resp:
+                    self.write({
+                        "sk_sid": security_code,
+                        "sk_uid": resp.get('payment_code'),
+                        "receipt_seq": self.id,
+                        "sk_uploaded": True
+                    })
+                else:
+                    raise Warning(r.text)
+            else:
+                raise Warning(r.text)
+            return True
+
     sk_sid = fields.Char("SID", copy=False)
     sk_uid = fields.Char("UID", copy=False)
     receipt_seq = fields.Char("Order Sequence", copy=False)
     sk_uploaded = fields.Boolean("Uploaded", copy=False)
+    accural_payment_type = fields.Selection([('T', 'Bank Transfer'),
+                                             ('K', 'Credit Card'),
+                                             ('D', 'Debit Card'),
+                                             ('P', 'Post Payment'),
+                                             ('O', 'Other')],
+                                            string='Payment Type',
+                                            default='O')
+    is_fiscal_position_accural=fields.Boolean(string="Fiscal position accural")
+
+    @api.onchange('fiscal_position_id')
+    def _onchange_fiscal_position_id(self):
+        self.is_fiscal_position_accural = False
+        if self.fiscal_position_id.is_accural:
+           self.is_fiscal_position_accural=True
+
+class AccountPaymentRegister(models.TransientModel):
+    _inherit = 'account.payment.register'
+
+    def action_create_payments(self):
+        res = super(AccountPaymentRegister, self).action_create_payments()
+        if self.line_ids.move_id.fiscal_position_id.is_cash:
+            self.line_ids.move_id.fetch_taxes()
+        return res
+
+
