@@ -13,7 +13,8 @@
             'views/account_move_views.xml',
             'views/account_tax_views.xml',
             'views/report_invoice.xml',
-            # 'views/firs_report_templates.xml',
+            'views/firs_report_templates.xml',
+            'views/pos_order_views.xml',
 
             # 'views/template.xml',
             # 'views/account_tax_view.xml',
@@ -21,7 +22,7 @@
             # 'views/account_fiscal_position_view.xml',
             # "notify_cron.xml"
           ],
-  # "qweb"  : ['static/src/xml/firs_report.xml'],
+  "qweb"  : ['static/src/xml/firs_report.xml'],
   "images" : ['static/description/icon.png'],
   # "author" :  "Intelligent Fiscal Systems",
   # "website" :  "https://i-fis.com/",

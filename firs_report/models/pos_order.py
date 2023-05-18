@@ -7,7 +7,8 @@ import json
 import pytz
 import time
 import hashlib
-
+import logging
+_logger = logging.getLogger(__name__)
 
 
 class PosOrder(models.Model):
@@ -16,6 +17,7 @@ class PosOrder(models.Model):
     firs_bill_number = fields.Char('FIRS Bill Number')
 
     def _create_invoice(self, move_vals):
+        print(move_vals,"vals")
         move_vals.update({
             'sk_sid': self.sk_sid,
             'sk_uid': self.sk_uid,
@@ -27,9 +29,15 @@ class PosOrder(models.Model):
     def create_from_ui(self, orders, draft=False):
         res = super(PosOrder, self).create_from_ui(orders, draft)
         if res:
+            print("res")
             for r in res:
                 order = self.browse(r.get('id'))
+                print(order,"ooooooo")
+                print(order.sk_uid,"oool")
+                print(order.sk_sid,"oool")
                 if order.account_move and order.sk_uid:
+                    print(order.sk_sid)
+                    print(order.sk_uid)
                     order.account_move.sudo().write({
                         'sk_sid': order.sk_sid,
                         'sk_uid': order.sk_uid,

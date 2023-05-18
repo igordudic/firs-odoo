@@ -2,7 +2,7 @@
 #################################################################################
 # Author I-FIS llc
 #################################################################################
-# from . import pos_order
+from . import pos_order
 from . import account_move
 from . import firs_config
 from . import account_fiscal_position

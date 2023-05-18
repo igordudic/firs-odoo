@@ -120,6 +120,7 @@ class FirsConfig(models.Model):
 
     @api.model
     def get_report(self, vals):
+        print("helooooooo",vals)
         data_dict = {}
         rec_data = self.browse(int(vals['conf_id']))
         crr = str(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))

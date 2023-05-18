@@ -42,23 +42,23 @@
 <!--			</div>-->
 <!--		</xpath>-->
 		<xpath expr="//div[@class='pos-receipt']" position="inside">
-			<t t-if="receipt.sk_sid">
-				<div class="pos-receipt-center-align">SID: <t t-esc="receipt.sk_sid" /></div>
-			</t>
-			<t t-if="receipt.sk_uid">
-				<div class="pos-receipt-center-align">UID: <t t-esc="receipt.sk_uid" /></div>
-			</t>
-			<div class="pos-receipt-center-align">Check if your receipt is valid:</div>
-			<div style="margin-top: 10px;">
-				<center>
-					<div id="qrcode">
-						<img alt="QRCode" t-att-src="getReceiptQRCodeValue" align="left"/>
-					</div>
-					<div id="firs_logo">
-						<img src="/firs_report/static/description/FIRS-LOGO.png" align="left" width="160" height="125"/>
-					</div>
-				</center>
-			</div>
+        <t t-if="receipt.sk_sid">
+            <div class="pos-receipt-center-align">SID: <t t-esc="receipt.sk_sid" /></div>
+        </t>
+        <t t-if="receipt.sk_uid">
+            <div class="pos-receipt-center-align">UID: <t t-esc="receipt.sk_uid" /></div>
+        </t>
+        <div class="pos-receipt-center-align">Check if your receipt is valid:</div>
+        <div style="margin-top: 10px;">
+            <center>
+                <div id="qrcode">
+                    <img alt="QRCode" class="pos-receipt-qr-code" align="left"/>
+                </div>
+                <div id="firs_logo">
+                    <img src="/firs_report/static/description/FIRS-LOGO.png" align="left" width="160" height="125"/>
+                </div>
+            </center>
+        </div>
 			<!-- <t t-if="order.get('sk_uid')">
 				<div style="margin-top: 10px;">
 					<center>
@@ -104,7 +104,7 @@
 	                        <t t-esc="orderline.get_quantity_str_with_unit()"/>
 	                    </td>
 						<td class="pos-right-align">
-<!--	                        <t t-esc="pos.format_currency(orderline.get_display_price())"/>-->
+	                        <t t-esc="widget.format_currency(orderline.get_display_price())"/>
 	                    </td>
                 	</tr>
             	</table>
@@ -119,21 +119,21 @@
 				<tr class="emph">
                     <td>Subtotal:</td>
 					<td class="pos-right-align">
-<!--                        <t t-esc="pos.format_currency(receipt.subtotal)"/>-->
+                        <t t-esc="widget.format_currency(receipt.subtotal)"/>
                     </td>
                 </tr>
 				<t t-foreach="receipt.tax_details" t-as="tax" t-key="tax.name">
                     <tr class="emph">
                         <td><t t-esc="tax.name"/></td>
 						<td class="pos-right-align">
-<!--                            <t t-esc="pos.format_currency_no_symbol(tax.amount)"/>-->
+                            <t t-esc="widget.format_currency(tax.amount)"/>
                         </td>
                     </tr>
 				</t>
 				<tr class="emph">
 					<td class="pos-left-align" style="font-weight: bold; font-size: 20px;">Total:</td>
 					<td class="pos-right-align" style="font-weight: bold; font-size: 20px;">
-<!--						<t t-esc="pos.format_currency(receipt.total_with_tax)"/>-->
+						<t t-esc="widget.format_currency(receipt.total_with_tax)"/>
 					</td>
 				</tr>
 			</table>
@@ -163,11 +163,5 @@
             <span>Tax Free</span>
         </span>
     </t>
-    <!-- <t t-name="TaxFreeButton" name="Tax Free Button" owl="1">
-    	<span class="control-button order-taxfree" style="min-width:90%;margin-left:0px;">
-                <i class="fa fa-print"></i>
-                Tax Free
-        </span>
-   	</t> -->
-   	
+
 </templates>
