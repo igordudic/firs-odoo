@@ -11,7 +11,9 @@ import json
 import time
 import hashlib
 import logging
+
 _logger = logging.getLogger(__name__)
+
 
 class AccountInvoice(models.Model):
     """Model for representing an invoice in the Odoo accounting system.
@@ -256,7 +258,6 @@ class AccountInvoice(models.Model):
             else:
                 raise Warning(request.text)
 
-
     def cancel_invoice_firs(self):
         """
           This function cancels an invoice in the system and sends a report to the FIRS API.
@@ -331,7 +332,7 @@ class AccountInvoice(models.Model):
             self.write({'firs_inv_bill_number': bill_num})
             code_security = rec_data.client_secret + rec_data.vat_number + \
                             rec_data.inv_business_place + str(rec_data.inv_session_id) \
-                            + str(bill_num) + str(date_invoice)\
+                            + str(bill_num) + str(date_invoice) \
                             + str(amount_total)
             security_code = hashlib.md5(code_security.encode(
                 encoding='utf_8', errors='strict')).hexdigest()
@@ -358,7 +359,7 @@ class AccountInvoice(models.Model):
                 data_dict['bill'].update({'tax_free': amount_total})
             _logger.warning('XXXXXXXXXXXXXX: %s', data_dict)
             url = 'https://atrs-api.firs.gov.ng/v1/bills/report' if \
-                 rec_data.firs_type == 'production' else 'https://api-dev.i-fis.com/v1/bills/report'
+                rec_data.firs_type == 'production' else 'https://api-dev.i-fis.com/v1/bills/report'
             request = requests.post(url, data=json.dumps(data_dict), headers=headers, timeout=10)
             if request.status_code == 200:
                 resp = request.json()
@@ -374,9 +375,11 @@ class AccountInvoice(models.Model):
             else:
                 raise Warning(request.text)
 
-
     @api.onchange('fiscal_position_id')
     def _onchange_fiscal_position_id(self):
         self.is_fiscal_position_accural = False
         if self.fiscal_position_id.is_accural:
             self.is_fiscal_position_accural = True
+
+
+
