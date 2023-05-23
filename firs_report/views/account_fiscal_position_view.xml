@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+		<record model="ir.ui.view" id="account_fiscal_position_view_form">
+			<field name="name">account.fiscal.position.view.form.firs_report.inherit</field>
+			<field name="model">account.fiscal.position</field>
+			<field name="inherit_id" ref="account.view_account_position_form"/>
+			<field name="arch" type="xml">
+				<field name="name" position="after">
+					<field name="is_cash"/>
+                    <field name="is_accural"/>
+				</field>
+			</field>
+		</record>
+</odoo>

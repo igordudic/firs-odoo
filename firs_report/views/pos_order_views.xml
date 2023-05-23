@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    		<record model="ir.ui.view" id="pos_order_tree_firs_inherited">
+			<field name="name">pos.order.tree.firs</field>
+			<field name="model">pos.order</field>
+			<field name="inherit_id" ref="point_of_sale.view_pos_order_tree" />
+			<field name="arch" type="xml">
+				<field name="state" position="before">
+					<field name="firs_status" class="firs_status_check"/>
+				</field>
+			</field>
+		</record>
+
+		<record id="action_firs_upload_bill" model="ir.actions.server">
+	        <field name="name">FIRS Upload</field>
+	        <field name="type">ir.actions.server</field>
+	        <field name="state">code</field>
+	        <field name="model_id" ref="firs_report.model_pos_order"/>
+	        <field name="binding_model_id" ref="firs_report.model_pos_order"/>
+	        <field name="code">records.upload_order_bills()</field>
+	    </record>
+        <record model="ir.ui.view" id="pos_order_form_inherited">
+			<field name="name">pos.order.form</field>
+			<field name="model">pos.order</field>
+			<field name="inherit_id" ref="point_of_sale.view_pos_pos_form" />
+			<field name="arch" type="xml">
+				<field name="pos_reference" position="after">
+					<field name="sk_sid" readonly="1"/>
+					<field name="sk_uid" readonly="1"/>
+					<field name="receipt_seq" readonly="1"/>
+					<field name="firs_bill_number" invisible="1"/>
+				</field>
+				<button name="refund" position='after'>
+					<button name="fetch_taxes" string="Upload Report" type="object" attrs="{'invisible': [('sk_uid','!=',False)]}" class="oe_highlight"/>
+					<!-- <button name="fetch_without_taxes" string="Tax Free" type="object" class="oe_highlight"/> -->
+				</button>
+			</field>
+		</record>
+
+
+
+
+
+		<record id="action_pos_order" model="ir.actions.act_window">
+			<field name="name">Orders</field>
+			<field name="type">ir.actions.act_window</field>
+			<field name="res_model">pos.order</field>
+			<field name="view_mode">tree,form</field>
+			<field name="view_id" eval="False"/>
+			<field name="domain">[('sk_uid','=',False)]</field>
+		</record>
+
+
+		<menuitem id="firs_order_menu_id" name="Failed Orders Upload"  action="action_pos_order" parent="point_of_sale.menu_point_config_product" sequence="21"/>
+</odoo>
